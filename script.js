@@ -333,12 +333,13 @@ let eventsData = {
         link: 'https://afronation.com/'
     },
     'black-portugal': {
-        title: 'Black in Portugal',
-        date: null,
-        time: 'TBD',
+        title: 'Afro Nation Portugal',
+        date: '2026-07-03',
+        endDate: '2026-07-05',
+        time: 'July 3-5',
         location: 'Portugal',
         category: 'travel',
-        link: 'https://www.blackinportugal.com/'
+        link: 'https://www.afronation.com/'
     },
     // === WELLNESS & NATURE ===
     'carolina-beach': {
