@@ -215,7 +215,7 @@ let eventsData = {
         time: 'Friday',
         location: 'Irwin Belk Complex, Charlotte, NC',
         category: 'sports',
-        link: 'https://www.jcsugoldenbulls.com/sports/track-and-field',
+        link: 'https://goldenbullsports.com/sports/mens-track-and-field/schedule',
         note: "Malichi's Track Meet"
     },
     // === FESTIVALS & CULTURE ===
