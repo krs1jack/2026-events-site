@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Culture, Travel & Fun - Event Sign-Up</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sign-In Screen -->
+    <div id="signInScreen" class="sign-in-screen">
+        <div class="sign-in-container">
+            <div class="sign-in-header">
+                <h1>2026 Culture, Travel & Fun</h1>
+                <p>Welcome! Select your name to sign in</p>
+            </div>
+            <div class="sign-in-members">
+                <button class="sign-in-btn" data-member="Sam">
+                    <span class="avatar">S</span>
+                    <span class="name">Sam</span>
+                </button>
+                <button class="sign-in-btn" data-member="Charisse">
+                    <span class="avatar">C</span>
+                    <span class="name">Charisse</span>
+                </button>
+                <button class="sign-in-btn" data-member="Dee">
+                    <span class="avatar">D</span>
+                    <span class="name">Dee</span>
+                </button>
+                <button class="sign-in-btn" data-member="Kim">
+                    <span class="avatar">K</span>
+                    <span class="name">Kim</span>
+                </button>
+                <button class="sign-in-btn" data-member="Jenn">
+                    <span class="avatar">J</span>
+                    <span class="name">Jenn</span>
+                </button>
+                <button class="sign-in-btn" data-member="Arline">
+                    <span class="avatar">A</span>
+                    <span class="name">Arline</span>
+                </button>
+                <button class="sign-in-btn" data-member="Treva">
+                    <span class="avatar">T</span>
+                    <span class="name">Treva</span>
+                </button>
+                <button class="sign-in-btn" data-member="Kesha">
+                    <span class="avatar">K</span>
+                    <span class="name">Kesha</span>
+                </button>
+                <button class="sign-in-btn" data-member="Dana">
+                    <span class="avatar">D</span>
+                    <span class="name">Dana</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Bar (shown when logged in) -->
+    <div id="userBar" class="user-bar hidden">
+        <div class="user-info">
+            <span class="user-avatar" id="userAvatar">S</span>
+            <span class="user-name">Welcome, <strong id="userName">Sam</strong></span>
+        </div>
+        <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+    </div>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>2026 Culture, Travel & Fun</h1>
+            <p class="tagline">Your Year of Adventures Awaits</p>
+            <div class="members-preview">
+                <span class="member-badge">Sam</span>
+                <span class="member-badge">Charisse</span>
+                <span class="member-badge">Dee</span>
+                <span class="member-badge">Kim</span>
+                <span class="member-badge">Jenn</span>
+                <span class="member-badge">Arline</span>
+                <span class="member-badge">Treva</span>
+                <span class="member-badge">Kesha</span>
+                <span class="member-badge">Dana</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="filter-nav">
+        <div class="container">
+            <button class="filter-btn active" data-category="all">All Events</button>
+            <button class="filter-btn" data-category="music">Music</button>
+            <button class="filter-btn" data-category="sports">Sports</button>
+            <button class="filter-btn" data-category="family">Family</button>
+            <button class="filter-btn" data-category="festivals">Culture & Festivals</button>
+            <button class="filter-btn" data-category="travel">Travel</button>
+            <button class="filter-btn" data-category="wellness">Wellness & Nature</button>
+            <button class="filter-btn" data-category="church">Church & Sunday</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Quick Stats -->
+        <section class="stats-bar">
+            <div class="stat">
+                <span class="stat-number" id="totalEvents">0</span>
+                <span class="stat-label">Total Events</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" id="upcomingEvents">0</span>
+                <span class="stat-label">Upcoming</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" id="signedUpEvents">0</span>
+                <span class="stat-label">You're Going</span>
+            </div>
+        </section>
+
+        <!-- Calendar View Toggle -->
+        <section class="view-toggle">
+            <button class="view-btn active" data-view="list">List View</button>
+            <button class="view-btn" data-view="calendar">Calendar View</button>
+            <button class="add-event-btn" onclick="openAddEvent()">+ Add Event</button>
+            <button class="export-btn" onclick="exportToGoogleCalendar()">Export to Google Calendar</button>
+        </section>
+
+        <!-- Events List View -->
+        <section id="listView" class="events-section">
+
+            <!-- Concerts & Shows -->
+            <div class="category-section" data-category="music">
+                <h2 class="category-title music">Concerts & Shows</h2>
+                <div class="events-grid">
+
+                    <article class="event-card music" data-event-id="new-edition">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">27</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>New Edition – The New Edition Way Tour</h3>
+                            <p class="event-time">8:00 PM - 9:00 PM</p>
+                            <p class="event-location">Spectrum Center, Charlotte</p>
+                            <span class="event-tag confirmed">Confirmed</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('new-edition')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card music" data-event-id="bruno-mars">
+                        <div class="event-date">
+                            <span class="month">APR</span>
+                            <span class="day">29</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Bruno Mars – Romantic Tour</h3>
+                            <p class="event-time">7:00 PM</p>
+                            <p class="event-location">Charlotte, NC</p>
+                            <span class="event-tag ticketmaster">Ticketmaster</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bruno-mars')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card music" data-event-id="rb-lovers">
+                        <div class="event-date">
+                            <span class="month">MAR</span>
+                            <span class="day">20</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>R&B Lovers Tour</h3>
+                            <p class="event-time">8:00 PM</p>
+                            <p class="event-location">Bojangles Coliseum, Charlotte</p>
+                            <span class="event-tag confirmed">Confirmed</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('rb-lovers')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Sports & School Events -->
+            <div class="category-section" data-category="sports">
+                <h2 class="category-title sports">Sports & School Events</h2>
+                <div class="events-grid">
+
+                    <article class="event-card sports" data-event-id="duke-unc">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">7</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Duke vs UNC Basketball</h3>
+                            <p class="event-time">6:30 PM</p>
+                            <p class="event-location">TBD</p>
+                            <span class="event-tag rivalry">Big Rivalry</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('duke-unc')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card sports" data-event-id="ciaa">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">24-28</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>CIAA Tournament</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">Charlotte, NC</p>
+                            <span class="event-tag multiday">Multi-Day Event</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('ciaa')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card sports" data-event-id="ghoe">
+                        <div class="event-date">
+                            <span class="month">OCT</span>
+                            <span class="day">31</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>GHOE Homecoming Game vs Elon</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">Greensboro, NC</p>
+                            <span class="event-tag homecoming">Homecoming</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('ghoe')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card sports" data-event-id="ncat-track">
+                        <div class="event-date flexible">
+                            <span class="month">TBD</span>
+                            <span class="day">--</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>NC A&T Track Meets</h3>
+                            <p class="event-time">Seasonal</p>
+                            <p class="event-location">Greensboro, NC</p>
+                            <span class="event-tag pending">Dana Needed</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('ncat-track')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Family Events -->
+            <div class="category-section" data-category="family">
+                <h2 class="category-title family">Family Events</h2>
+                <div class="events-grid">
+
+                    <article class="event-card family" data-event-id="fiu-grad">
+                        <div class="event-date">
+                            <span class="month">APR</span>
+                            <span class="day">26-30</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>FIU Spring Graduation</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">Miami, FL</p>
+                            <span class="event-tag celebration">Celebration</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('fiu-grad')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family" data-event-id="devin-grad">
+                        <div class="event-date">
+                            <span class="month">JUN</span>
+                            <span class="day">13</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Devin Graduation</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">TBD</p>
+                            <span class="event-tag confirmed">Fixed Date</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('devin-grad')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-arline">
+                        <div class="event-date birthday-date">
+                            <span class="month">APR</span>
+                            <span class="day">9</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Arline's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-arline')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-dana">
+                        <div class="event-date birthday-date">
+                            <span class="month">APR</span>
+                            <span class="day">9</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Dana's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-dana')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-kim">
+                        <div class="event-date birthday-date">
+                            <span class="month">MAY</span>
+                            <span class="day">26</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Kim's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-kim')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-jenn">
+                        <div class="event-date birthday-date">
+                            <span class="month">SEP</span>
+                            <span class="day">3</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Jenn's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-jenn')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-sam">
+                        <div class="event-date birthday-date">
+                            <span class="month">NOV</span>
+                            <span class="day">3</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Sam's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-sam')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card family birthday" data-event-id="bday-dee">
+                        <div class="event-date birthday-date">
+                            <span class="month">DEC</span>
+                            <span class="day">13</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Dee's Birthday</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Celebrate!</p>
+                            <span class="event-tag birthday">Birthday</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bday-dee')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Festivals & Culture -->
+            <div class="category-section" data-category="festivals">
+                <h2 class="category-title festivals">Festivals & Culture</h2>
+                <div class="events-grid">
+
+                    <article class="event-card festivals" data-event-id="dirty-south">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">28</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Dirty South Rodeo / For the Culture</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">Durham, NC</p>
+                            <span class="event-tag culture">Culture Fest</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('dirty-south')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="adult-recess">
+                        <div class="event-date">
+                            <span class="month">APR</span>
+                            <span class="day">25</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Adult Recess Festival</h3>
+                            <p class="event-time">1:00 PM - 7:00 PM</p>
+                            <p class="event-location">Raleigh, NC</p>
+                            <span class="event-tag fun">Adult Fun</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('adult-recess')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="tampa-heritage">
+                        <div class="event-date">
+                            <span class="month">APR</span>
+                            <span class="day">25-26</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Tampa Black Heritage Festival</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">Tampa, FL</p>
+                            <span class="event-tag heritage">Heritage</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('tampa-heritage')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="bimbe">
+                        <div class="event-date">
+                            <span class="month">MAY</span>
+                            <span class="day">16</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Bimbe Cultural Arts Festival</h3>
+                            <p class="event-time">All Day</p>
+                            <p class="event-location">Durham, NC</p>
+                            <span class="event-tag free">Free Event</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('bimbe')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="artscape">
+                        <div class="event-date">
+                            <span class="month">MAY</span>
+                            <span class="day">23-24</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Artscape Festival</h3>
+                            <p class="event-time">11:00 AM - 11:00 PM</p>
+                            <p class="event-location">Baltimore, MD</p>
+                            <span class="event-tag art">Art Festival</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('artscape')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="roots-picnic">
+                        <div class="event-date">
+                            <span class="month">MAY</span>
+                            <span class="day">29-31</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Roots Picnic</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">Philadelphia, PA</p>
+                            <span class="event-tag music">Music + Culture</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('roots-picnic')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card festivals" data-event-id="taste-of-soul">
+                        <div class="event-date flexible">
+                            <span class="month">FALL</span>
+                            <span class="day">TBD</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Taste of Soul</h3>
+                            <p class="event-time">Annual Event</p>
+                            <p class="event-location">Los Angeles, CA</p>
+                            <span class="event-tag annual">Annual</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('taste-of-soul')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Travel & Big Experiences -->
+            <div class="category-section" data-category="travel">
+                <h2 class="category-title travel">Travel & Big Experiences</h2>
+                <div class="events-grid">
+
+                    <article class="event-card travel" data-event-id="black-tech">
+                        <div class="event-date">
+                            <span class="month">APR</span>
+                            <span class="day">20-24</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Black Is Tech Conference</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">Houston, TX</p>
+                            <span class="event-tag conference">Conference</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('black-tech')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="nma">
+                        <div class="event-date">
+                            <span class="month">JUL</span>
+                            <span class="day">25-29</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>NMA Annual Convention</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">San Juan, Puerto Rico</p>
+                            <span class="event-tag tropical">Tropical</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('nma')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="marthas-vineyard">
+                        <div class="event-date">
+                            <span class="month">AUG</span>
+                            <span class="day">1-14</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Martha's Vineyard Trip</h3>
+                            <p class="event-time">First 2 Weeks of August</p>
+                            <p class="event-location">Massachusetts</p>
+                            <span class="event-tag flexible">Flexible Dates</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('marthas-vineyard')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="afrotech">
+                        <div class="event-date">
+                            <span class="month">NOV</span>
+                            <span class="day">2-6</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>AfroTech Conference</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">Houston, TX</p>
+                            <span class="event-tag tech">Tech Conference</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('afrotech')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="art-basel">
+                        <div class="event-date">
+                            <span class="month">DEC</span>
+                            <span class="day">3-6</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Art Basel</h3>
+                            <p class="event-time">Multiple Days</p>
+                            <p class="event-location">Miami, FL</p>
+                            <span class="event-tag premium">Premium Event</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('art-basel')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="afronation">
+                        <div class="event-date flexible">
+                            <span class="month">TBD</span>
+                            <span class="day">--</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>AfroNation</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">International</p>
+                            <span class="event-tag international">International</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('afronation')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card travel" data-event-id="black-portugal">
+                        <div class="event-date flexible">
+                            <span class="month">TBD</span>
+                            <span class="day">--</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Black in Portugal</h3>
+                            <p class="event-time">TBD</p>
+                            <p class="event-location">Portugal</p>
+                            <span class="event-tag international">International</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('black-portugal')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Wellness & Nature -->
+            <div class="category-section" data-category="wellness">
+                <h2 class="category-title wellness">Wellness & Nature</h2>
+                <div class="events-grid">
+
+                    <article class="event-card wellness" data-event-id="waterfalls">
+                        <div class="event-date flexible">
+                            <span class="month">APR-OCT</span>
+                            <span class="day">Weekend</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>NC Waterfalls Day Trip</h3>
+                            <p class="event-time">Weekend Only</p>
+                            <p class="event-location">North Carolina</p>
+                            <span class="event-tag nature">Nature Adventure</span>
+                            <p class="event-note">Best months: April - October. Saturday day trip or Sunday early return.</p>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('waterfalls')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card wellness" data-event-id="girls-tea">
+                        <div class="event-date">
+                            <span class="month">JAN</span>
+                            <span class="day">24</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Girls' Day Tea / Sleepover</h3>
+                            <p class="event-time">Saturday (Flexible)</p>
+                            <p class="event-location">Host TBD</p>
+                            <span class="event-tag bonding">Bonding Time</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('girls-tea')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card wellness" data-event-id="line-dance">
+                        <div class="event-date flexible">
+                            <span class="month">Monthly</span>
+                            <span class="day">Fri/Sat</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Line Dance Events</h3>
+                            <p class="event-time">Friday Night or Saturday</p>
+                            <p class="event-location">Various Locations</p>
+                            <span class="event-tag recurring">Monthly Option</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('line-dance')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <!-- Church & Sunday -->
+            <div class="category-section" data-category="church">
+                <h2 class="category-title church">Church & Sunday</h2>
+                <div class="events-grid">
+
+                    <article class="event-card church" data-event-id="church-home">
+                        <div class="event-date flexible">
+                            <span class="month">Any</span>
+                            <span class="day">Sunday</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Church Sunday - Home</h3>
+                            <p class="event-time">Sunday Morning</p>
+                            <p class="event-location">Home Church</p>
+                            <span class="event-tag spiritual">Spiritual</span>
+                            <p class="event-note">Can pair with brunch or cultural events</p>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('church-home')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card church" data-event-id="church-durham">
+                        <div class="event-date flexible">
+                            <span class="month">Any</span>
+                            <span class="day">Sunday</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Church Sunday - Durham</h3>
+                            <p class="event-time">Sunday Morning</p>
+                            <p class="event-location">Durham, NC</p>
+                            <span class="event-tag spiritual">Spiritual</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('church-durham')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card church" data-event-id="church-ws">
+                        <div class="event-date flexible">
+                            <span class="month">Any</span>
+                            <span class="day">Sunday</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Church Sunday - Winston-Salem</h3>
+                            <p class="event-time">Sunday Morning</p>
+                            <p class="event-location">Winston-Salem, NC</p>
+                            <span class="event-tag spiritual">Spiritual</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('church-ws')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                    <article class="event-card church" data-event-id="church-charlotte">
+                        <div class="event-date flexible">
+                            <span class="month">Any</span>
+                            <span class="day">Sunday</span>
+                            <span class="year">2026</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Church Sunday - Charlotte</h3>
+                            <p class="event-time">Sunday Morning</p>
+                            <p class="event-location">Charlotte, NC</p>
+                            <span class="event-tag spiritual">Spiritual</span>
+                        </div>
+                        <div class="event-rsvp">
+                            <button class="rsvp-btn" onclick="openRSVP('church-charlotte')">RSVP</button>
+                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Calendar View -->
+        <section id="calendarView" class="calendar-section hidden">
+            <div class="calendar-header">
+                <button class="cal-nav" id="prevMonth">&lt;</button>
+                <h3 id="currentMonth">January 2026</h3>
+                <button class="cal-nav" id="nextMonth">&gt;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+            </div>
+            <div class="calendar-days" id="calendarDays"></div>
+        </section>
+
+    </main>
+
+    <!-- RSVP Modal -->
+    <div id="rsvpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeRSVP()">&times;</span>
+            <h2 id="modalEventTitle">Event Name</h2>
+            <p id="modalEventDetails" class="modal-details"></p>
+
+            <div class="rsvp-form">
+                <h3>Who's Going?</h3>
+                <div class="member-rsvp-list">
+                    <div class="member-rsvp">
+                        <span class="member-name">Sam</span>
+                        <select data-member="Sam" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Charisse</span>
+                        <select data-member="Charisse" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Dee</span>
+                        <select data-member="Dee" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Kim</span>
+                        <select data-member="Kim" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Jenn</span>
+                        <select data-member="Jenn" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Arline</span>
+                        <select data-member="Arline" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Treva</span>
+                        <select data-member="Treva" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                    <div class="member-rsvp">
+                        <span class="member-name">Kesha</span>
+                        <select data-member="Kesha" class="rsvp-select">
+                            <option value="">Select...</option>
+                            <option value="going">Going</option>
+                            <option value="maybe">Maybe</option>
+                            <option value="not-going">Not This One</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="notes-section">
+                    <label for="eventNotes">Notes:</label>
+                    <textarea id="eventNotes" placeholder="Add any notes about this event..."></textarea>
+                </div>
+
+                <div class="rsvp-actions">
+                    <button class="save-rsvp-btn" onclick="saveRSVP()">Save RSVP</button>
+                    <button class="edit-event-btn" onclick="openEditEvent()">Edit Event</button>
+                    <button class="delete-event-btn" onclick="deleteEvent()">Delete</button>
+                </div>
+            </div>
+
+            <div class="current-attendees">
+                <h4>Current Status:</h4>
+                <div id="attendeesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddEvent()">&times;</span>
+            <h2>Add New Event</h2>
+            <p class="modal-details">Create a new event for the group</p>
+
+            <div class="add-event-form">
+                <div class="form-group">
+                    <label for="newEventTitle">Event Title *</label>
+                    <input type="text" id="newEventTitle" placeholder="Enter event name..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newEventDate">Date</label>
+                    <input type="date" id="newEventDate" min="2026-01-01" max="2026-12-31">
+                </div>
+
+                <div class="form-group">
+                    <label for="newEventTime">Time</label>
+                    <input type="text" id="newEventTime" placeholder="e.g., 7:00 PM">
+                </div>
+
+                <div class="form-group">
+                    <label for="newEventLocation">Location</label>
+                    <input type="text" id="newEventLocation" placeholder="Enter location...">
+                </div>
+
+                <div class="form-group">
+                    <label for="newEventCategory">Category</label>
+                    <select id="newEventCategory">
+                        <option value="music">Music</option>
+                        <option value="sports">Sports</option>
+                        <option value="family">Family</option>
+                        <option value="festivals" selected>Culture & Festivals</option>
+                        <option value="travel">Travel</option>
+                        <option value="wellness">Wellness & Nature</option>
+                        <option value="church">Church & Sunday</option>
+                    </select>
+                </div>
+
+                <button class="save-event-btn" onclick="saveNewEvent()">Add Event</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>2026 Culture, Travel & Fun - Making Memories Together</p>
+            <div class="footer-legend">
+                <span class="legend-item music">Music</span>
+                <span class="legend-item sports">Sports</span>
+                <span class="legend-item family">Family</span>
+                <span class="legend-item festivals">Festivals</span>
+                <span class="legend-item travel">Travel</span>
+                <span class="legend-item wellness">Wellness</span>
+                <span class="legend-item church">Church</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
