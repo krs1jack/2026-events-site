@@ -47,6 +47,204 @@ let currentEventId = null;
 let currentMonth = new Date(2026, 0); // January 2026
 let currentUser = null;
 
+// === Administrator & Invitation System ===
+let groupAdmin = null; // Email of the administrator
+let invitedUsers = {}; // { email: { name, invitedBy, invitedAt, status } }
+let isAdmin = false;
+
+// Load admin and invitation data
+function loadAdminData() {
+    try {
+        const savedAdmin = localStorage.getItem('2026EventsAdmin');
+        const savedInvites = localStorage.getItem('2026EventsInvitations');
+        
+        if (savedAdmin) {
+            groupAdmin = savedAdmin;
+        }
+        
+        if (savedInvites) {
+            invitedUsers = JSON.parse(savedInvites);
+        }
+    } catch (error) {
+        console.error('Failed to load admin data:', error);
+    }
+}
+
+function saveAdminData() {
+    if (groupAdmin) {
+        localStorage.setItem('2026EventsAdmin', groupAdmin);
+    }
+    localStorage.setItem('2026EventsInvitations', JSON.stringify(invitedUsers));
+}
+
+function setGroupAdmin(email) {
+    groupAdmin = email;
+    saveAdminData();
+    showToast('You are now the group administrator', 'success');
+}
+
+function checkIfAdmin(userEmail) {
+    return userEmail === groupAdmin;
+}
+
+function checkIfInvited(userEmail) {
+    // If no admin set yet, first user becomes admin
+    if (!groupAdmin) {
+        return true;
+    }
+    
+    // Admin is always invited
+    if (userEmail === groupAdmin) {
+        return true;
+    }
+    
+    // Check if user is in invited list
+    return invitedUsers[userEmail] && invitedUsers[userEmail].status === 'accepted';
+}
+
+function sendInvitation(email, name) {
+    if (!isAdmin) {
+        showToast('Only the administrator can send invitations', 'error');
+        return;
+    }
+    
+    if (invitedUsers[email]) {
+        showToast('This user has already been invited', 'warning');
+        return;
+    }
+    
+    // Generate invitation
+    const inviteCode = generateInviteCode();
+    invitedUsers[email] = {
+        name: name || email,
+        invitedBy: currentUser,
+        invitedAt: new Date().toISOString(),
+        status: 'pending',
+        inviteCode: inviteCode
+    };
+    
+    saveAdminData();
+    
+    // Generate invitation link
+    const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
+    
+    showInvitationModal(email, inviteLink);
+    
+    return inviteLink;
+}
+
+function generateInviteCode() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+function acceptInvitation(inviteCode) {
+    // Find invitation by code
+    for (const [email, invite] of Object.entries(invitedUsers)) {
+        if (invite.inviteCode === inviteCode && invite.status === 'pending') {
+            invite.status = 'accepted';
+            saveAdminData();
+            return email;
+        }
+    }
+    return null;
+}
+
+function showInvitationModal(email, inviteLink) {
+    const modal = document.getElementById('invitationLinkModal');
+    if (!modal) return;
+    
+    document.getElementById('inviteEmail').textContent = email;
+    document.getElementById('inviteLink').value = inviteLink;
+    
+    modal.classList.add('active');
+}
+
+function copyInviteLink() {
+    const linkInput = document.getElementById('inviteLink');
+    linkInput.select();
+    document.execCommand('copy');
+    showToast('Invitation link copied!', 'success');
+}
+
+function closeInvitationModal() {
+    const modal = document.getElementById('invitationLinkModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function openAdminPanel() {
+    if (!isAdmin) {
+        showToast('Only the administrator can access this', 'error');
+        return;
+    }
+    
+    const modal = document.getElementById('adminPanel');
+    if (!modal) return;
+    
+    renderInvitationsList();
+    modal.classList.add('active');
+}
+
+function closeAdminPanel() {
+    const modal = document.getElementById('adminPanel');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function renderInvitationsList() {
+    const container = document.getElementById('invitationsList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    const invites = Object.entries(invitedUsers);
+    
+    if (invites.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #64748B; padding: 20px;">No invitations sent yet.</p>';
+        return;
+    }
+    
+    invites.forEach(([email, invite]) => {
+        const item = document.createElement('div');
+        item.className = 'invitation-item';
+        
+        const statusBadge = invite.status === 'accepted' 
+            ? '<span class="status-badge accepted">✓ Accepted</span>'
+            : '<span class="status-badge pending">⏳ Pending</span>';
+        
+        item.innerHTML = `
+            <div class="invitation-info">
+                <strong>${escapeHtml(invite.name)}</strong>
+                <div class="invitation-email">${escapeHtml(email)}</div>
+                <div class="invitation-date">Invited ${new Date(invite.invitedAt).toLocaleDateString()}</div>
+            </div>
+            <div class="invitation-status">
+                ${statusBadge}
+                ${invite.status === 'pending' ? `<button class="resend-btn" onclick="resendInvitation('${escapeHtml(email)}')">Resend</button>` : ''}
+            </div>
+        `;
+        
+        container.appendChild(item);
+    });
+}
+
+function resendInvitation(email) {
+    const invite = invitedUsers[email];
+    if (!invite) return;
+    
+    const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${invite.inviteCode}`;
+    showInvitationModal(email, inviteLink);
+}
+
+// Make functions globally accessible
+window.copyInviteLink = copyInviteLink;
+window.closeInvitationModal = closeInvitationModal;
+window.openAdminPanel = openAdminPanel;
+window.closeAdminPanel = closeAdminPanel;
+window.resendInvitation = resendInvitation;
+
 // === Member Management Functions ===
 function loadMembers() {
     try {
@@ -397,7 +595,8 @@ function addEventLinksToCards() {
 
 // === Initialize Application ===
 document.addEventListener('DOMContentLoaded', function() {
-    loadMembers(); // Load members first
+    loadAdminData(); // Load admin and invitation data first
+    loadMembers(); // Load members
     loadConfirmedChurchEvents();
     loadDataFromStorage();
     loadCustomEvents();
@@ -508,6 +707,42 @@ function handleUserSignedIn(user) {
     localStorage.setItem('2026EventsUserEmail', user.email);
     localStorage.setItem('2026EventsUserUID', user.uid);
 
+    // Check for invitation code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCode = urlParams.get('invite');
+    
+    if (inviteCode) {
+        const invitedEmail = acceptInvitation(inviteCode);
+        if (invitedEmail && invitedEmail === user.email) {
+            showToast('Welcome! Invitation accepted.', 'success');
+            // Clear the invite parameter from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (invitedEmail && invitedEmail !== user.email) {
+            showToast('This invitation is for a different email address', 'error');
+            auth.signOut();
+            return;
+        }
+    }
+    
+    // If no admin exists yet, first user becomes admin
+    if (!groupAdmin) {
+        setGroupAdmin(user.email);
+        isAdmin = true;
+        showToast('You are the first user - you are now the group administrator!', 'success');
+    } else {
+        // Check if user is admin
+        isAdmin = checkIfAdmin(user.email);
+        
+        // Check if user is invited
+        if (!checkIfInvited(user.email)) {
+            showToast('You need an invitation to access this group', 'error');
+            setTimeout(() => {
+                auth.signOut();
+            }, 2000);
+            return;
+        }
+    }
+
     // Hide sign-in screen
     document.getElementById('signInScreen').classList.add('hidden');
 
@@ -593,6 +828,14 @@ function completeSignIn(participant, user) {
         userAvatar.style.display = 'flex';
         userAvatar.textContent = participant.charAt(0);
         userAvatar.style.background = memberColors[participant] || '#667eea';
+    }
+    
+    // Show admin controls if user is admin
+    if (isAdmin) {
+        const adminBtn = document.getElementById('adminButton');
+        if (adminBtn) {
+            adminBtn.style.display = 'block';
+        }
     }
 
     // Initialize the app
