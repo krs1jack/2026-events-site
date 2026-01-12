@@ -238,12 +238,43 @@ function resendInvitation(email) {
     showInvitationModal(email, inviteLink);
 }
 
+function sendInviteFromPanel() {
+    const emailInput = document.getElementById('inviteEmailInput');
+    const nameInput = document.getElementById('inviteNameInput');
+    
+    const email = emailInput.value.trim();
+    const name = nameInput.value.trim();
+    
+    if (!email) {
+        showToast('Please enter an email address', 'error');
+        return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    // Send invitation
+    sendInvitation(email, name);
+    
+    // Clear inputs
+    emailInput.value = '';
+    nameInput.value = '';
+    
+    // Refresh invitations list
+    renderInvitationsList();
+}
+
 // Make functions globally accessible
 window.copyInviteLink = copyInviteLink;
 window.closeInvitationModal = closeInvitationModal;
 window.openAdminPanel = openAdminPanel;
 window.closeAdminPanel = closeAdminPanel;
 window.resendInvitation = resendInvitation;
+window.sendInviteFromPanel = sendInviteFromPanel;
 
 // === Member Management Functions ===
 function loadMembers() {

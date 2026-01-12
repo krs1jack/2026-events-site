@@ -38,7 +38,12 @@
             <span class="user-avatar" id="userAvatar">?</span>
             <span class="user-name">Welcome, <strong id="userName">Guest</strong></span>
         </div>
-        <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
+        <div class="user-actions">
+            <button id="adminButton" class="admin-btn" onclick="openAdminPanel()" style="display: none;">
+                👑 Admin Panel
+            </button>
+            <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
+        </div>
     </div>
 
     <header class="hero">
@@ -259,6 +264,70 @@
                 <input type="text" id="newMemberName" placeholder="Enter member name..." maxlength="20">
                 <button class="add-member-btn" onclick="addNewMember()">Add Member</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminPanel" class="modal">
+        <div class="modal-content admin-modal">
+            <span class="close-modal" onclick="closeAdminPanel()">&times;</span>
+            <h2>👑 Administrator Panel</h2>
+            <p class="modal-details">Manage invitations and group settings</p>
+            
+            <div class="admin-section">
+                <h3>Send New Invitation</h3>
+                <div class="invitation-form">
+                    <div class="form-group">
+                        <label for="inviteEmailInput">Email Address</label>
+                        <input type="email" id="inviteEmailInput" placeholder="friend@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inviteNameInput">Name (Optional)</label>
+                        <input type="text" id="inviteNameInput" placeholder="Friend's name" />
+                    </div>
+                    <button class="send-invite-btn" onclick="sendInviteFromPanel()">
+                        📧 Generate Invitation Link
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>Pending & Accepted Invitations</h3>
+                <div id="invitationsList" class="invitations-list">
+                    <!-- Invitations will be listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invitation Link Modal -->
+    <div id="invitationLinkModal" class="modal">
+        <div class="modal-content invitation-modal">
+            <span class="close-modal" onclick="closeInvitationModal()">&times;</span>
+            <h2>📧 Invitation Generated!</h2>
+            <p class="modal-details">Share this link with <strong id="inviteEmail"></strong></p>
+            
+            <div class="invite-link-container">
+                <label>Invitation Link:</label>
+                <div class="link-copy-box">
+                    <input type="text" id="inviteLink" readonly />
+                    <button class="copy-btn" onclick="copyInviteLink()">
+                        📋 Copy
+                    </button>
+                </div>
+            </div>
+            
+            <div class="invite-instructions">
+                <h4>How to share:</h4>
+                <ol>
+                    <li>Click "Copy" to copy the invitation link</li>
+                    <li>Send it via email, text, or messaging app</li>
+                    <li>The recipient must sign in with the invited email address</li>
+                    <li>Link expires when accepted or can be resent from Admin Panel</li>
+                </ol>
+            </div>
+            
+            <button class="close-invite-btn" onclick="closeInvitationModal()">Done</button>
         </div>
     </div>
 
