@@ -12,6 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
+const db = firebase.firestore();
 
 // === Church Locations ===
 const churchLocations = {
@@ -499,6 +500,9 @@ function addChurchEvent(churchId, sundayDate) {
     eventsData[eventId] = newEvent;
     confirmedChurchEvents[eventId] = newEvent;
     saveConfirmedChurchEvents();
+    
+    // Save to cloud
+    saveChurchEventToCloud(eventId, newEvent);
 
     // Create and add card to DOM
     addChurchEventCard(newEvent);
@@ -774,6 +778,11 @@ function completeSignIn(participant, user) {
     updateStats();
     updateAllAttendeeCountsOnCards();
     renderCalendar();
+    
+    // Load data from cloud and setup real-time listeners
+    loadDataFromCloud().then(() => {
+        setupRealtimeListeners();
+    });
 }
 
 function handleUserSignedOut() {
@@ -857,6 +866,222 @@ function loadCustomEvents() {
 
 function saveCustomEvents() {
     localStorage.setItem('2026CustomEvents', JSON.stringify(customEvents));
+}
+
+// === Firestore Cloud Sync Functions ===
+// Save RSVP data to Firestore
+async function saveRSVPToCloud(eventId, rsvpData) {
+    try {
+        await db.collection('events').doc(eventId).set({
+            rsvp: rsvpData,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        console.log('RSVP saved to cloud:', eventId);
+    } catch (error) {
+        console.error('Error saving RSVP to cloud:', error);
+        showToast('Failed to save to cloud, but saved locally', 'warning');
+    }
+}
+
+// Save notes to Firestore
+async function saveNotesToCloud(eventId, notes) {
+    try {
+        await db.collection('events').doc(eventId).set({
+            notes: notes,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        console.log('Notes saved to cloud:', eventId);
+    } catch (error) {
+        console.error('Error saving notes to cloud:', error);
+    }
+}
+
+// Save travel data to Firestore
+async function saveTravelToCloud(eventId, travelInfo) {
+    try {
+        await db.collection('events').doc(eventId).set({
+            travel: travelInfo,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        console.log('Travel data saved to cloud:', eventId);
+    } catch (error) {
+        console.error('Error saving travel to cloud:', error);
+    }
+}
+
+// Save custom event to Firestore
+async function saveCustomEventToCloud(eventId, eventData) {
+    try {
+        await db.collection('customEvents').doc(eventId).set({
+            ...eventData,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('Custom event saved to cloud:', eventId);
+    } catch (error) {
+        console.error('Error saving custom event to cloud:', error);
+        showToast('Failed to save event to cloud, but saved locally', 'warning');
+    }
+}
+
+// Save church event to Firestore
+async function saveChurchEventToCloud(eventId, eventData) {
+    try {
+        await db.collection('churchEvents').doc(eventId).set({
+            ...eventData,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('Church event saved to cloud:', eventId);
+    } catch (error) {
+        console.error('Error saving church event to cloud:', error);
+    }
+}
+
+// Load all data from Firestore
+async function loadDataFromCloud() {
+    try {
+        // Load RSVPs, notes, and travel for all events
+        const eventsSnapshot = await db.collection('events').get();
+        
+        eventsSnapshot.forEach(doc => {
+            const data = doc.data();
+            const eventId = doc.id;
+            
+            if (data.rsvp) {
+                rsvpData[eventId] = data.rsvp;
+            }
+            if (data.notes) {
+                notesData[eventId] = data.notes;
+            }
+            if (data.travel) {
+                travelData[eventId] = data.travel;
+            }
+        });
+        
+        // Save to localStorage as cache
+        saveDataToStorage();
+        
+        // Load custom events
+        const customEventsSnapshot = await db.collection('customEvents').get();
+        customEventsSnapshot.forEach(doc => {
+            const eventId = doc.id;
+            const eventData = doc.data();
+            customEvents[eventId] = eventData;
+            eventsData[eventId] = eventData;
+        });
+        saveCustomEvents();
+        
+        // Load church events
+        const churchEventsSnapshot = await db.collection('churchEvents').get();
+        churchEventsSnapshot.forEach(doc => {
+            const eventId = doc.id;
+            const eventData = doc.data();
+            confirmedChurchEvents[eventId] = eventData;
+            eventsData[eventId] = eventData;
+        });
+        saveConfirmedChurchEvents();
+        
+        console.log('All data loaded from cloud');
+        
+        // Update UI
+        updateAllAttendeeCountsOnCards();
+        updateStats();
+        renderConfirmedChurchCards();
+        
+    } catch (error) {
+        console.error('Error loading data from cloud:', error);
+        showToast('Using local data - cloud sync failed', 'warning');
+    }
+}
+
+// Setup real-time listeners for data changes
+function setupRealtimeListeners() {
+    // Listen to events collection for RSVP/notes/travel updates
+    db.collection('events').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventId = change.doc.id;
+            const data = change.doc.data();
+            
+            if (change.type === 'added' || change.type === 'modified') {
+                if (data.rsvp) {
+                    rsvpData[eventId] = data.rsvp;
+                }
+                if (data.notes) {
+                    notesData[eventId] = data.notes;
+                }
+                if (data.travel) {
+                    travelData[eventId] = data.travel;
+                }
+                
+                // Update localStorage cache
+                saveDataToStorage();
+                
+                // Update UI
+                updateAttendeeCountOnCard(eventId);
+                updateStats();
+            }
+        });
+    }, (error) => {
+        console.error('Error in realtime listener:', error);
+    });
+    
+    // Listen to custom events
+    db.collection('customEvents').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventId = change.doc.id;
+            const eventData = change.doc.data();
+            
+            if (change.type === 'added') {
+                customEvents[eventId] = eventData;
+                eventsData[eventId] = eventData;
+                saveCustomEvents();
+                
+                // Add card if not exists
+                if (!document.querySelector(`[data-event-id="${eventId}"]`)) {
+                    addEventCardToDOM(eventId, eventData);
+                }
+                updateStats();
+            } else if (change.type === 'modified') {
+                customEvents[eventId] = eventData;
+                eventsData[eventId] = eventData;
+                saveCustomEvents();
+                updateEventCardInDOM(eventId);
+            } else if (change.type === 'removed') {
+                delete customEvents[eventId];
+                delete eventsData[eventId];
+                saveCustomEvents();
+                
+                const card = document.querySelector(`[data-event-id="${eventId}"]`);
+                if (card) card.remove();
+                updateStats();
+            }
+        });
+    }, (error) => {
+        console.error('Error in custom events listener:', error);
+    });
+    
+    // Listen to church events
+    db.collection('churchEvents').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventId = change.doc.id;
+            const eventData = change.doc.data();
+            
+            if (change.type === 'added') {
+                confirmedChurchEvents[eventId] = eventData;
+                eventsData[eventId] = eventData;
+                saveConfirmedChurchEvents();
+                
+                // Add card if not exists
+                if (!document.querySelector(`[data-event-id="${eventId}"]`)) {
+                    addChurchEventCard(eventData);
+                }
+                updateStats();
+            }
+        });
+    }, (error) => {
+        console.error('Error in church events listener:', error);
+    });
+    
+    console.log('Real-time listeners activated');
 }
 
 // === Filter Functions ===
@@ -1027,6 +1252,15 @@ function saveRSVP() {
 
     // Persist to storage
     saveDataToStorage();
+    
+    // Save to cloud
+    saveRSVPToCloud(currentEventId, eventRSVP);
+    if (notes) {
+        saveNotesToCloud(currentEventId, notes);
+    }
+    if (hotel || flight || transport) {
+        saveTravelToCloud(currentEventId, travelData[currentEventId]);
+    }
 
     // Update display
     updateAttendeesDisplay(eventRSVP);
@@ -1249,6 +1483,9 @@ function saveNewEvent() {
 
     // Save to storage
     saveCustomEvents();
+    
+    // Save to cloud
+    saveCustomEventToCloud(eventId, newEvent);
 
     // Add card to DOM
     addEventCardToDOM(eventId, newEvent);
@@ -1516,6 +1753,8 @@ function saveEditedEvent() {
     if (customEvents[editingEventId]) {
         customEvents[editingEventId] = eventsData[editingEventId];
         saveCustomEvents();
+        // Save to cloud
+        saveCustomEventToCloud(editingEventId, eventsData[editingEventId]);
     }
 
     // Update the card in DOM
@@ -1577,12 +1816,20 @@ function deleteEvent() {
     if (customEvents[currentEventId]) {
         delete customEvents[currentEventId];
         saveCustomEvents();
+        // Delete from cloud
+        db.collection('customEvents').doc(currentEventId).delete()
+            .catch(error => console.error('Error deleting custom event from cloud:', error));
     }
 
     // Remove RSVPs and notes
     delete rsvpData[currentEventId];
     delete notesData[currentEventId];
+    delete travelData[currentEventId];
     saveDataToStorage();
+    
+    // Delete from cloud
+    db.collection('events').doc(currentEventId).delete()
+        .catch(error => console.error('Error deleting event data from cloud:', error));
 
     // Close modal
     closeRSVP();
