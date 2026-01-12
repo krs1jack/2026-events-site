@@ -1,13 +1,11 @@
 // === Firebase Configuration ===
-// IMPORTANT: Replace this with your own Firebase config
-// Go to Firebase Console > Project Settings > Your Apps to get these values
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyD2RaLiJx2S9VcVrU2FfK4u6dOqlfRctpo",
+    authDomain: "eventssite-104e7.firebaseapp.com",
+    projectId: "eventssite-104e7",
+    storageBucket: "eventssite-104e7.firebasestorage.app",
+    messagingSenderId: "186084239560",
+    appId: "1:186084239560:web:0fd31542bc5e517e361dfd"
 };
 
 // Initialize Firebase
@@ -15,227 +13,403 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-// === Church/Spiritual Locations (customizable) ===
-let churchLocations = {};
+// === Church Locations ===
+const churchLocations = {
+    'jenns-church': {
+        name: "Jenn's Church",
+        location: 'Winston-Salem, NC',
+        host: 'Jenn'
+    },
+    'first-calvary': {
+        name: "First Calvary Baptist Church",
+        location: 'Durham, NC',
+        host: 'Kim'
+    },
+    'dees-church': {
+        name: "Dee's Church",
+        location: 'Charlotte, NC',
+        host: 'Dee'
+    }
+};
 
 // === Travel Details Storage ===
 let travelData = {};
 
-// === Event Data Store (starts empty) ===
-let eventsData = {};
+// === Event Data Store ===
+let eventsData = {
+    // === BIRTHDAYS ===
+    'bday-jenn': {
+        title: "Jenn's Birthday",
+        date: '2026-09-03',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    'bday-kim': {
+        title: "Kim's Birthday",
+        date: '2026-05-26',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    'bday-dee': {
+        title: "Dee's Birthday",
+        date: '2026-12-13',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    'bday-sam': {
+        title: "Sam's Birthday",
+        date: '2026-11-03',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    'bday-arline': {
+        title: "Arline's Birthday",
+        date: '2026-04-09',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    'bday-dana': {
+        title: "Dana's Birthday",
+        date: '2026-04-09',
+        time: 'All Day',
+        location: 'Celebrate!',
+        category: 'family',
+        isBirthday: true
+    },
+    // === CONCERTS & MUSIC ===
+    'new-edition': {
+        title: 'New Edition – The New Edition Way Tour',
+        date: '2026-02-27',
+        time: '8:00 PM - 9:00 PM',
+        location: 'Spectrum Center, Charlotte',
+        category: 'music',
+        link: 'https://www.ticketmaster.com/new-edition-tickets/artist/735647'
+    },
+    'bruno-mars': {
+        title: 'Bruno Mars – Romantic Tour',
+        date: '2026-04-29',
+        time: '7:00 PM',
+        location: 'Charlotte, NC',
+        category: 'music',
+        link: 'https://www.ticketmaster.com/bruno-mars-tickets/artist/1094215'
+    },
+    'rb-lovers': {
+        title: 'R&B Lovers Tour',
+        date: '2026-03-20',
+        time: '8:00 PM',
+        location: 'Bojangles Coliseum, Charlotte',
+        category: 'music',
+        link: 'https://www.ticketmaster.com/'
+    },
+    // === SPORTS ===
+    'duke-unc': {
+        title: 'Duke vs UNC Basketball',
+        date: '2026-02-07',
+        time: '6:30 PM',
+        location: 'Chapel Hill, NC',
+        category: 'sports',
+        link: 'https://goheels.com/sports/mbball'
+    },
+    'duke-unc-mar': {
+        title: 'Duke vs UNC Basketball - Watch Party',
+        date: '2026-03-07',
+        time: '6:30 PM',
+        location: "Kim's House (Game at Duke)",
+        category: 'sports',
+        link: 'https://goduke.com/sports/mbball'
+    },
+    'ciaa': {
+        title: 'CIAA Tournament',
+        date: '2026-02-24',
+        endDate: '2026-02-28',
+        time: 'Multiple Days',
+        location: 'Charlotte, NC',
+        category: 'sports',
+        link: 'https://theciaa.com/sports/2024/6/11/tournament-central'
+    },
+    'ghoe': {
+        title: 'GHOE Homecoming Game vs Elon',
+        date: '2026-10-31',
+        time: 'TBD',
+        location: 'Greensboro, NC',
+        category: 'sports',
+        link: 'https://www.ncat.edu/alumni/ghoe/index.php'
+    },
+    // === FAMILY ===
+    'fiu-grad': {
+        title: 'FIU Spring Graduation',
+        date: '2026-04-26',
+        endDate: '2026-04-30',
+        time: 'TBD',
+        location: 'Miami, FL',
+        category: 'family',
+        link: 'https://www.fiu.edu/graduation/'
+    },
+    'devin-grad': {
+        title: 'Devin Graduation',
+        date: '2026-06-13',
+        time: 'TBD',
+        location: 'Duke University, Durham, NC',
+        category: 'family',
+        link: 'https://commencement.duke.edu/'
+    },
+    // === TRACK & FIELD ===
+    'liberty-track-jan': {
+        title: 'Liberty University Track Meet',
+        date: '2026-01-30',
+        endDate: '2026-01-31',
+        time: 'Fri-Sat',
+        location: 'Liberty Indoor Track Complex, Lynchburg, VA',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'highpoint-track-mar': {
+        title: 'High Point University Track Meet',
+        date: '2026-03-20',
+        endDate: '2026-03-21',
+        time: 'Fri-Sat',
+        location: 'Vert Stadium, High Point, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'ncat-track-apr': {
+        title: 'NC A&T Track Meet',
+        date: '2026-04-17',
+        endDate: '2026-04-18',
+        time: 'Fri-Sat',
+        location: 'Marcus T. Johnson Track, Greensboro, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'ncat-track-may': {
+        title: 'NC A&T Track Meet',
+        date: '2026-05-01',
+        endDate: '2026-05-02',
+        time: 'Fri-Sat',
+        location: 'Marcus T. Johnson Track, Greensboro, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'caa-track-championship': {
+        title: 'CAA Track Championship',
+        date: '2026-05-15',
+        endDate: '2026-05-16',
+        time: 'Fri-Sat',
+        location: 'Elon, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'jcsu-track-apr': {
+        title: 'Johnson C. Smith University Track Meet',
+        date: '2026-04-03',
+        time: 'Friday',
+        location: 'Irwin Belk Complex, Charlotte, NC',
+        category: 'sports',
+        link: 'https://goldenbullsports.com/sports/mens-track-and-field/schedule',
+        note: "Malichi's Track Meet"
+    },
+    // === FESTIVALS & CULTURE ===
+    'dirty-south': {
+        title: 'Dirty South Rodeo Festival',
+        date: '2026-07-25',
+        time: '3:00 PM - 8:00 PM',
+        location: 'Raleigh/Durham, NC',
+        category: 'festivals',
+        link: 'https://posh.vip/e/dirty-south-rodeo-festival-raleighdurham-nc'
+    },
+    'adult-recess': {
+        title: '4th Annual Adult Recess Festival',
+        date: '2026-04-25',
+        time: '1:00 PM',
+        location: 'Buffaloe Road Athletic Park, Raleigh',
+        category: 'festivals',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'tampa-heritage': {
+        title: 'Tampa Black Heritage Festival',
+        date: '2026-04-25',
+        endDate: '2026-04-26',
+        time: 'TBD',
+        location: 'Tampa, FL',
+        category: 'festivals',
+        link: 'https://tampablackheritagefest.org/'
+    },
+    'bimbe': {
+        title: 'Bimbé Cultural Arts Festival',
+        date: '2026-05-16',
+        time: 'All Day',
+        location: 'Durham, NC',
+        category: 'festivals',
+        link: 'https://www.bfrcdurham.org/bimbe'
+    },
+    'artscape': {
+        title: 'Artscape Festival',
+        date: '2026-05-23',
+        endDate: '2026-05-24',
+        time: '11:00 AM - 11:00 PM',
+        location: 'Baltimore, MD',
+        category: 'festivals',
+        link: 'https://www.artscape.org/'
+    },
+    'roots-picnic': {
+        title: 'Roots Picnic',
+        date: '2026-05-29',
+        endDate: '2026-05-31',
+        time: 'Multiple Days',
+        location: 'Philadelphia, PA',
+        category: 'festivals',
+        link: 'https://rootspicnic.com/'
+    },
+    'taste-of-soul': {
+        title: 'Taste of Soul',
+        date: null,
+        time: 'Annual Event',
+        location: 'Los Angeles, CA',
+        category: 'festivals',
+        link: 'https://tasteofsoul.org/'
+    },
+    // === TRAVEL & CONFERENCES ===
+    'black-tech': {
+        title: 'Black Is Tech Conference',
+        date: '2026-04-20',
+        endDate: '2026-04-24',
+        time: 'Multiple Days',
+        location: 'Houston, TX',
+        category: 'travel',
+        link: 'https://blackistechconference.com/'
+    },
+    'nma': {
+        title: 'NMA Annual Convention',
+        date: '2026-07-25',
+        endDate: '2026-07-29',
+        time: 'Multiple Days',
+        location: 'San Juan, Puerto Rico',
+        category: 'travel',
+        link: 'https://www.nmanet.org/'
+    },
+    'marthas-vineyard': {
+        title: "Martha's Vineyard Trip",
+        date: '2026-08-01',
+        endDate: '2026-08-14',
+        time: 'First 2 Weeks of August',
+        location: 'Massachusetts',
+        category: 'travel',
+        link: 'https://www.mvol.com/'
+    },
+    'afrotech': {
+        title: 'AfroTech Conference',
+        date: '2026-11-02',
+        endDate: '2026-11-06',
+        time: 'Multiple Days',
+        location: 'Houston, TX',
+        category: 'travel',
+        link: 'https://afrotech.com/'
+    },
+    'art-basel': {
+        title: 'Art Basel',
+        date: '2026-12-03',
+        endDate: '2026-12-06',
+        time: 'Multiple Days',
+        location: 'Miami, FL',
+        category: 'travel',
+        link: 'https://www.artbasel.com/miami-beach'
+    },
+    'afronation': {
+        title: 'AfroNation',
+        date: null,
+        time: 'TBD',
+        location: 'International',
+        category: 'travel',
+        link: 'https://afronation.com/'
+    },
+    'black-portugal': {
+        title: 'Afro Nation Portugal',
+        date: '2026-07-03',
+        endDate: '2026-07-05',
+        time: 'July 3-5',
+        location: 'Portugal',
+        category: 'travel',
+        link: 'https://www.afronation.com/'
+    },
+    // === WELLNESS & NATURE ===
+    'carolina-beach': {
+        title: 'Carolina Beach Adventure: Hike, Kayak & Chill',
+        date: '2026-05-09',
+        time: '9:00 AM - 5:00 PM',
+        location: 'Carolina Beach Boardwalk Amusement Park',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'hike-mine-creek': {
+        title: 'Hike & Chill Mine Creek Greenway',
+        date: '2026-02-07',
+        time: '9:30 AM',
+        location: 'Mine Creek Greenway',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'hike-porte-noire': {
+        title: 'Hike & Chill at Porte NOIRE Farms & Gardens',
+        date: '2026-03-07',
+        time: '9:30 AM',
+        location: 'Porte NOIRE Gardens',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'waterfalls': {
+        title: 'NC Waterfalls Day Trip',
+        date: null,
+        time: 'Weekend Only',
+        location: 'North Carolina',
+        category: 'wellness',
+        link: 'https://www.romanticasheville.com/waterfalls'
+    },
+    'girls-tea': {
+        title: "Girls' Day Tea / Sleepover",
+        date: '2026-01-24',
+        time: 'Saturday (Flexible)',
+        location: 'Host TBD',
+        category: 'wellness'
+    },
+    'line-dance': {
+        title: 'Line Dance Events',
+        date: null,
+        time: 'Friday Night or Saturday',
+        location: 'Various Locations',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/d/nc--charlotte/line-dancing/'
+    }
+};
 
-// Members list - Starts empty, users add their own
-let members = [];
+// Members list
+const members = ['Sam', 'Charisse', 'Dee', 'Kim', 'Jenn', 'Arline', 'Treva', 'Kesha'];
 
-// Member colors for avatars - Generated dynamically
-const memberColors = {};
-
-// Color palette for generating member colors
-const colorPalette = [
-    '#667eea', '#ec4899', '#f59e0b', '#10b981', 
-    '#8b5cf6', '#ef4444', '#06b6d4', '#f97316',
-    '#3b82f6', '#14b8a6', '#f43f5e', '#8b5cf6'
-];
+// Member colors for avatars
+const memberColors = {
+    'Sam': '#667eea',
+    'Charisse': '#ec4899',
+    'Dee': '#f59e0b',
+    'Kim': '#10b981',
+    'Jenn': '#8b5cf6',
+    'Arline': '#ef4444',
+    'Treva': '#06b6d4',
+    'Kesha': '#f97316'
+};
 
 // RSVP Storage
 let rsvpData = {};
 let notesData = {};
 let customEvents = {};
-
-// Current state
-let currentEventId = null;
-let currentMonth = new Date(2026, 0); // January 2026
-let currentUser = null;
-
-// === Member Management Functions ===
-function loadMembers() {
-    try {
-        const saved = localStorage.getItem('2026EventsMembers');
-        if (saved) {
-            members = JSON.parse(saved);
-            // Generate colors for existing members
-            members.forEach((member, index) => {
-                if (!memberColors[member]) {
-                    memberColors[member] = colorPalette[index % colorPalette.length];
-                }
-            });
-        }
-        // If no members exist, prompt user to add first member
-        if (members.length === 0) {
-            console.log('No members found. User will be prompted to add members.');
-        }
-    } catch (error) {
-        console.error('Failed to load members:', error);
-        members = [];
-    }
-}
-
-function saveMembers() {
-    localStorage.setItem('2026EventsMembers', JSON.stringify(members));
-    localStorage.setItem('2026EventsMemberColors', JSON.stringify(memberColors));
-}
-
-function addNewMember() {
-    const nameInput = document.getElementById('newMemberName');
-    const name = nameInput.value.trim();
-    
-    if (!name) {
-        showToast('Please enter a name', 'error');
-        return;
-    }
-    
-    if (members.includes(name)) {
-        showToast('Member already exists', 'error');
-        return;
-    }
-    
-    // Add member
-    members.push(name);
-    
-    // Assign color
-    memberColors[name] = colorPalette[members.length % colorPalette.length];
-    
-    // Save
-    saveMembers();
-    
-    // Update UI
-    renderMembersManager();
-    renderParticipantGrid();
-    renderMembersPreview();
-    
-    // Clear input
-    nameInput.value = '';
-    
-    showToast(`${name} added successfully!`, 'success');
-}
-
-function removeMember(memberName) {
-    if (!confirm(`Remove ${memberName} from the group? Their RSVPs will be preserved.`)) {
-        return;
-    }
-    
-    // Remove from array
-    members = members.filter(m => m !== memberName);
-    delete memberColors[memberName];
-    
-    // Save
-    saveMembers();
-    
-    // Update UI
-    renderMembersManager();
-    renderParticipantGrid();
-    renderMembersPreview();
-    
-    showToast(`${memberName} removed`, 'success');
-}
-
-function renderMembersManager() {
-    const container = document.getElementById('membersListManager');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (members.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #64748B; padding: 20px;">No members yet. Add your first member below!</p>';
-        return;
-    }
-    
-    members.forEach(member => {
-        const item = document.createElement('div');
-        item.className = 'member-item';
-        item.innerHTML = `
-            <span class="member-item-name">${escapeHtml(member)}</span>
-            <button class="remove-member-btn" onclick="removeMember('${escapeHtml(member)}')">Remove</button>
-        `;
-        container.appendChild(item);
-    });
-}
-
-function renderParticipantGrid() {
-    const container = document.getElementById('participantGrid');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (members.length === 0) {
-        container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #64748B; padding: 20px;">No members yet. Click "Add/Remove Members" to get started!</p>';
-        return;
-    }
-    
-    members.forEach(member => {
-        const btn = document.createElement('button');
-        btn.className = 'participant-btn';
-        btn.dataset.participant = member;
-        btn.innerHTML = `
-            <span class="participant-avatar" style="background: ${memberColors[member] || '#667eea'}">${member.charAt(0).toUpperCase()}</span>
-            <span class="participant-name">${escapeHtml(member)}</span>
-        `;
-        btn.onclick = function() {
-            selectParticipant(member);
-        };
-        container.appendChild(btn);
-    });
-}
-
-function renderMembersPreview() {
-    const container = document.getElementById('membersPreview');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    members.forEach(member => {
-        const badge = document.createElement('span');
-        badge.className = 'member-badge';
-        badge.textContent = member;
-        badge.style.background = `linear-gradient(135deg, ${memberColors[member] || '#667eea'}22 0%, ${memberColors[member] || '#667eea'}44 100%)`;
-        badge.style.borderColor = memberColors[member] || '#667eea';
-        badge.style.color = memberColors[member] || '#667eea';
-        container.appendChild(badge);
-    });
-}
-
-function renderMemberRsvpList() {
-    const container = document.getElementById('memberRsvpList');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (members.length === 0) {
-        container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #64748B; padding: 20px;">No members in your group yet.</p>';
-        return;
-    }
-    
-    members.forEach(member => {
-        const div = document.createElement('div');
-        div.className = 'member-rsvp';
-        div.innerHTML = `
-            <span class="member-name">${escapeHtml(member)}</span>
-            <select data-member="${escapeHtml(member)}" class="rsvp-select">
-                <option value="">Select...</option>
-                <option value="going">Going</option>
-                <option value="maybe">Maybe</option>
-                <option value="not-going">Not This One</option>
-            </select>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function openManageMembers() {
-    const modal = document.getElementById('manageMembersModal');
-    modal.classList.add('active');
-    renderMembersManager();
-}
-
-function closeManageMembers() {
-    document.getElementById('manageMembersModal').classList.remove('active');
-}
-
-// Make functions globally accessible
-window.addNewMember = addNewMember;
-window.removeMember = removeMember;
-window.openManageMembers = openManageMembers;
-window.closeManageMembers = closeManageMembers;
 
 // Current state
 let currentEventId = null;
@@ -402,15 +576,12 @@ function addEventLinksToCards() {
 
 // === Initialize Application ===
 document.addEventListener('DOMContentLoaded', function() {
-    loadMembers(); // Load members first
     loadConfirmedChurchEvents();
     loadDataFromStorage();
     loadCustomEvents();
     renderConfirmedChurchCards();
     populateSundaySelects();
     addEventLinksToCards();
-    renderParticipantGrid();
-    renderMembersPreview();
     checkUserSession();
     setupSignIn();
     setupFilterButtons();
@@ -418,7 +589,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupCalendarNavigation();
     setupAddEventButton();
     setupChurchInvitations();
-    updateEmptyState(); // Check if we should show empty state
 });
 
 // === Render saved church events on load ===
@@ -531,14 +701,14 @@ function handleUserSignedIn(user) {
 function showParticipantModal() {
     const modal = document.getElementById('participantModal');
     modal.classList.add('active');
-    
-    // Render the participant grid
-    renderParticipantGrid();
-    
-    // If no members, show a message prompting them to add members
-    if (members.length === 0) {
-        showToast('Add members to your group to get started!', 'warning');
-    }
+
+    // Setup participant button handlers
+    document.querySelectorAll('.participant-btn').forEach(btn => {
+        btn.onclick = function() {
+            const participant = this.dataset.participant;
+            selectParticipant(participant);
+        };
+    });
 }
 
 function selectParticipant(participant) {
@@ -775,9 +945,6 @@ function openRSVP(eventId) {
     }
     document.getElementById('modalEventDetails').innerHTML = detailsHTML;
 
-    // Render member RSVP list
-    renderMemberRsvpList();
-
     // Load existing RSVP data
     const eventRSVP = rsvpData[eventId] || {};
     const eventNotes = notesData[eventId] || '';
@@ -789,7 +956,7 @@ function openRSVP(eventId) {
 
         // Highlight current user's select
         if (member === currentUser) {
-            select.style.borderColor = memberColors[currentUser] || '#059669';
+            select.style.borderColor = memberColors[currentUser] || '#667eea';
             select.style.borderWidth = '3px';
         } else {
             select.style.borderColor = '';
@@ -1096,9 +1263,6 @@ function saveNewEvent() {
 }
 
 function addEventCardToDOM(eventId, event) {
-    // Ensure category section exists
-    ensureCategorySection(event.category);
-    
     const section = document.querySelector(`[data-category="${event.category}"] .events-grid`);
     if (!section) return;
 
@@ -1127,44 +1291,6 @@ function addEventCardToDOM(eventId, event) {
     `;
 
     section.appendChild(card);
-    updateEmptyState();
-}
-
-function ensureCategorySection(category) {
-    const listView = document.getElementById('listView');
-    let section = document.querySelector(`[data-category="${category}"]`);
-    
-    if (!section) {
-        const categoryNames = {
-            'music': 'Entertainment',
-            'sports': 'Sports & Activities',
-            'family': 'Personal Events',
-            'festivals': 'Festivals & Culture',
-            'travel': 'Travel',
-            'wellness': 'Wellness & Nature',
-            'church': 'Spiritual'
-        };
-        
-        section = document.createElement('div');
-        section.className = 'category-section';
-        section.dataset.category = category;
-        section.innerHTML = `
-            <h2 class="category-title ${category}">${categoryNames[category] || category}</h2>
-            <div class="events-grid"></div>
-        `;
-        listView.appendChild(section);
-    }
-}
-
-function updateEmptyState() {
-    const emptyState = document.getElementById('emptyState');
-    const hasEvents = Object.keys(eventsData).length > 0 || Object.keys(customEvents).length > 0;
-    
-    if (hasEvents) {
-        emptyState.classList.add('hidden');
-    } else {
-        emptyState.classList.remove('hidden');
-    }
 }
 
 function formatDateForCard(dateStr) {
