@@ -564,23 +564,67 @@ function signOutUser() {
         });
 }
 
-function handleUserSignedIn(user) {
-    // Get user's display name (first name only for cleaner display)
-    const displayName = user.displayName ? user.displayName.split(' ')[0] : 'Friend';
-    currentUser = displayName;
+// Store Google user info temporarily
+let googleUser = null;
 
-    // Store user info
-    localStorage.setItem('2026EventsUser', displayName);
+function handleUserSignedIn(user) {
+    googleUser = user;
+
+    // Store Google user info
     localStorage.setItem('2026EventsUserEmail', user.email);
     localStorage.setItem('2026EventsUserUID', user.uid);
 
     // Hide sign-in screen
     document.getElementById('signInScreen').classList.add('hidden');
 
+    // Check if user has already selected a participant
+    const savedParticipant = localStorage.getItem('2026EventsParticipant_' + user.uid);
+
+    if (savedParticipant && members.includes(savedParticipant)) {
+        // User already selected their participant - complete sign in
+        completeSignIn(savedParticipant, user);
+    } else {
+        // Show participant selection modal
+        showParticipantModal();
+    }
+}
+
+function showParticipantModal() {
+    const modal = document.getElementById('participantModal');
+    modal.classList.add('active');
+
+    // Setup participant button handlers
+    document.querySelectorAll('.participant-btn').forEach(btn => {
+        btn.onclick = function() {
+            const participant = this.dataset.participant;
+            selectParticipant(participant);
+        };
+    });
+}
+
+function selectParticipant(participant) {
+    if (!googleUser) return;
+
+    // Save participant selection tied to Google UID
+    localStorage.setItem('2026EventsParticipant_' + googleUser.uid, participant);
+
+    // Close modal
+    document.getElementById('participantModal').classList.remove('active');
+
+    // Complete sign in
+    completeSignIn(participant, googleUser);
+
+    showToast(`Welcome, ${participant}! Your RSVPs will be tracked.`, 'success');
+}
+
+function completeSignIn(participant, user) {
+    currentUser = participant;
+    localStorage.setItem('2026EventsUser', participant);
+
     // Show user bar
     const userBar = document.getElementById('userBar');
     userBar.classList.remove('hidden');
-    document.getElementById('userName').textContent = displayName;
+    document.getElementById('userName').textContent = participant;
 
     // Handle profile photo
     const userPhoto = document.getElementById('userPhoto');
@@ -588,8 +632,8 @@ function handleUserSignedIn(user) {
 
     if (user.photoURL) {
         // Set avatar as fallback initially
-        userAvatar.textContent = displayName.charAt(0);
-        userAvatar.style.background = memberColors[displayName] || '#667eea';
+        userAvatar.textContent = participant.charAt(0);
+        userAvatar.style.background = memberColors[participant] || '#667eea';
         userAvatar.style.display = 'flex';
         userPhoto.style.display = 'none';
 
@@ -613,16 +657,14 @@ function handleUserSignedIn(user) {
         // No photo URL, show avatar
         userPhoto.style.display = 'none';
         userAvatar.style.display = 'flex';
-        userAvatar.textContent = displayName.charAt(0);
-        userAvatar.style.background = memberColors[displayName] || '#667eea';
+        userAvatar.textContent = participant.charAt(0);
+        userAvatar.style.background = memberColors[participant] || '#667eea';
     }
 
     // Initialize the app
     updateStats();
     updateAllAttendeeCountsOnCards();
     renderCalendar();
-
-    showToast(`Welcome, ${displayName}!`, 'success');
 }
 
 function handleUserSignedOut() {
