@@ -1568,13 +1568,20 @@ footer p {
     align-items: center;
     margin-bottom: 20px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
 }
 
 .your-events-header h2 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
+}
+
+.your-events-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .your-events-count {
@@ -1587,6 +1594,37 @@ footer p {
     background: rgba(255,255,255,0.2);
     padding: 2px 10px;
     border-radius: 20px;
+}
+
+.your-events-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.your-events-btn {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.your-events-btn:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-2px);
+}
+
+.your-events-btn:active {
+    transform: translateY(0);
 }
 
 .your-events-list {
@@ -1668,11 +1706,87 @@ footer p {
         text-align: center;
     }
 
+    .your-events-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .your-events-buttons {
+        justify-content: center;
+        width: 100%;
+    }
+
     .your-events-list {
         justify-content: center;
     }
 
     .your-event-chip .chip-title {
         max-width: 120px;
+    }
+}
+
+/* === Print Styles === */
+@media print {
+    body {
+        background: white;
+    }
+
+    .hero,
+    .filter-nav,
+    .user-bar,
+    .stats-bar,
+    .view-toggle,
+    .events-section,
+    .calendar-section,
+    footer,
+    .your-events-buttons,
+    .modal {
+        display: none !important;
+    }
+
+    .your-events-section {
+        background: white !important;
+        color: black !important;
+        padding: 20px;
+        box-shadow: none;
+    }
+
+    .your-events-header h2 {
+        color: black;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .your-events-count {
+        color: black !important;
+        opacity: 1 !important;
+    }
+
+    .your-events-list {
+        display: block;
+    }
+
+    .your-event-chip {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #333;
+        margin-bottom: 10px;
+        page-break-inside: avoid;
+    }
+
+    .your-event-chip .chip-date {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+
+    .your-event-chip .chip-title {
+        color: black !important;
+        max-width: none;
+        white-space: normal;
+    }
+
+    .your-event-chip .chip-view {
+        display: none;
     }
 }

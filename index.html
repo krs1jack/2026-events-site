@@ -93,7 +93,20 @@
         <section id="yourEventsSection" class="your-events-section hidden">
             <div class="your-events-header">
                 <h2>Your Events</h2>
-                <span class="your-events-count">You're attending <strong id="yourEventsCount">0</strong> events</span>
+                <div class="your-events-actions">
+                    <span class="your-events-count">You're attending <strong id="yourEventsCount">0</strong> events</span>
+                    <div class="your-events-buttons">
+                        <button class="your-events-btn print-btn" onclick="printYourEvents()" title="Print your events">
+                            <span>🖨️ Print</span>
+                        </button>
+                        <button class="your-events-btn csv-btn" onclick="exportYourEventsToCSV()" title="Export to CSV">
+                            <span>📄 CSV</span>
+                        </button>
+                        <button class="your-events-btn calendar-btn" onclick="exportToGoogleCalendar()" title="Export to Google Calendar">
+                            <span>📅 Calendar</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div id="yourEventsList" class="your-events-list">
                 <!-- Dynamically populated -->

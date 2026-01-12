@@ -1601,3 +1601,107 @@ function escapeICS(text) {
 }
 
 window.exportToGoogleCalendar = exportToGoogleCalendar;
+
+// === Print Your Events Function ===
+function printYourEvents() {
+    if (!currentUser) {
+        showToast('Please sign in first', 'error');
+        return;
+    }
+
+    // Get events the current user is going to
+    const userEvents = [];
+    Object.entries(eventsData).forEach(([id, event]) => {
+        const eventRSVP = rsvpData[id] || {};
+        if (eventRSVP[currentUser] === 'going') {
+            userEvents.push({ id, ...event });
+        }
+    });
+
+    if (userEvents.length === 0) {
+        showToast('No events to print. RSVP to some events first!', 'error');
+        return;
+    }
+
+    // Show a brief message before printing
+    showToast('Opening print dialog...', 'success');
+
+    // Small delay to let the toast show
+    setTimeout(() => {
+        window.print();
+    }, 500);
+}
+
+window.printYourEvents = printYourEvents;
+
+// === Export Your Events to CSV Function ===
+function exportYourEventsToCSV() {
+    if (!currentUser) {
+        showToast('Please sign in first', 'error');
+        return;
+    }
+
+    // Get events the current user is going to
+    const userEvents = [];
+    Object.entries(eventsData).forEach(([id, event]) => {
+        const eventRSVP = rsvpData[id] || {};
+        if (eventRSVP[currentUser] === 'going') {
+            userEvents.push({ id, ...event });
+        }
+    });
+
+    if (userEvents.length === 0) {
+        showToast('No events to export. RSVP to some events first!', 'error');
+        return;
+    }
+
+    // Sort by date
+    userEvents.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date) - new Date(b.date);
+    });
+
+    // Create CSV content
+    let csv = 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private\n';
+
+    userEvents.forEach(event => {
+        const subject = event.title.replace(/"/g, '""');
+        const startDate = event.date || '';
+        const endDate = event.endDate || event.date || '';
+        const location = event.location.replace(/"/g, '""');
+        const time = event.time.replace(/"/g, '""');
+        const allDay = (event.time === 'All Day' || event.time === 'TBD') ? 'True' : 'False';
+        
+        // Get notes if any
+        const notes = notesData[event.id] || '';
+        const travelInfo = travelData[event.id] || {};
+        let description = time;
+        
+        if (notes) {
+            description += ' - ' + notes.replace(/"/g, '""');
+        }
+        
+        if (travelInfo.hotel || travelInfo.flight || travelInfo.transport) {
+            description += ' | Travel: ';
+            if (travelInfo.hotel) description += 'Hotel: ' + travelInfo.hotel.replace(/"/g, '""') + ' ';
+            if (travelInfo.flight) description += 'Flight: ' + travelInfo.flight.replace(/"/g, '""') + ' ';
+            if (travelInfo.transport) description += 'Transport: ' + travelInfo.transport.replace(/"/g, '""');
+        }
+
+        csv += `"${subject}","${startDate}","","${endDate}","","${allDay}","${description}","${location}","False"\n`;
+    });
+
+    // Download CSV
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my-2026-events-${currentUser.toLowerCase()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    showToast(`${userEvents.length} events exported to CSV! Import into Google Calendar.`, 'success');
+}
+
+window.exportYourEventsToCSV = exportYourEventsToCSV;
