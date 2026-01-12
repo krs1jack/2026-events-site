@@ -209,6 +209,15 @@ let eventsData = {
         category: 'sports',
         link: 'https://ncataggies.com/sports/track-and-field'
     },
+    'jcsu-track-apr': {
+        title: 'Johnson C. Smith University Track Meet',
+        date: '2026-04-03',
+        time: 'Friday',
+        location: 'Irwin Belk Complex, Charlotte, NC',
+        category: 'sports',
+        link: 'https://www.jcsugoldenbulls.com/sports/track-and-field',
+        note: "Malichi's Track Meet"
+    },
     // === FESTIVALS & CULTURE ===
     'dirty-south': {
         title: 'Dirty South Rodeo Festival',
