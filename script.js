@@ -1666,12 +1666,12 @@ function exportYourEventsToCSV() {
     let csv = 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private\n';
 
     userEvents.forEach(event => {
-        const subject = event.title.replace(/"/g, '""');
+        const subject = (event.title || '').replace(/"/g, '""');
         const startDate = event.date || '';
         const endDate = event.endDate || event.date || '';
-        const location = event.location.replace(/"/g, '""');
-        const time = event.time.replace(/"/g, '""');
-        const allDay = (event.time === 'All Day' || event.time === 'TBD') ? 'True' : 'False';
+        const location = (event.location || '').replace(/"/g, '""');
+        const time = (event.time || 'TBD').replace(/"/g, '""');
+        const allDay = (time === 'All Day' || time === 'TBD') ? 'True' : 'False';
         
         // Get notes if any
         const notes = notesData[event.id] || '';
@@ -1689,6 +1689,8 @@ function exportYourEventsToCSV() {
             if (travelInfo.transport) description += 'Transport: ' + travelInfo.transport.replace(/"/g, '""');
         }
 
+        // Note: Start Time and End Time columns are left empty for Google Calendar compatibility
+        // Google Calendar will use the date columns and mark as all-day event if allDay is True
         csv += `"${subject}","${startDate}","","${endDate}","","${allDay}","${description}","${location}","False"\n`;
     });
 
