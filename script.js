@@ -1,3 +1,18 @@
+// === Firebase Configuration ===
+const firebaseConfig = {
+    apiKey: "AIzaSyD2RaLiJx2S9VcVrU2FfK4u6dOqlfRctpo",
+    authDomain: "eventssite-104e7.firebaseapp.com",
+    projectId: "eventssite-104e7",
+    storageBucket: "eventssite-104e7.firebasestorage.app",
+    messagingSenderId: "186084239560",
+    appId: "1:186084239560:web:0fd31542bc5e517e361dfd"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
 // === Event Data Store ===
 let eventsData = {
     // === BIRTHDAYS ===
@@ -345,20 +360,51 @@ document.addEventListener('DOMContentLoaded', function() {
     setupAddEventButton();
 });
 
-// === Sign In Functions ===
+// === Firebase Auth Functions ===
 function setupSignIn() {
-    const signInBtns = document.querySelectorAll('.sign-in-btn');
-    signInBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const member = this.dataset.member;
-            signIn(member);
-        });
+    // Firebase auth state listener handles sign-in state
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // User is signed in
+            handleUserSignedIn(user);
+        } else {
+            // User is signed out
+            handleUserSignedOut();
+        }
     });
 }
 
-function signIn(member) {
-    currentUser = member;
-    localStorage.setItem('2026EventsUser', member);
+function signInWithGoogle() {
+    auth.signInWithPopup(googleProvider)
+        .then((result) => {
+            // Sign-in handled by onAuthStateChanged
+        })
+        .catch((error) => {
+            console.error('Sign-in error:', error);
+            showToast('Sign-in failed: ' + error.message, 'error');
+        });
+}
+
+function signOutUser() {
+    auth.signOut()
+        .then(() => {
+            // Sign-out handled by onAuthStateChanged
+        })
+        .catch((error) => {
+            console.error('Sign-out error:', error);
+            showToast('Sign-out failed', 'error');
+        });
+}
+
+function handleUserSignedIn(user) {
+    // Get user's display name (first name only for cleaner display)
+    const displayName = user.displayName ? user.displayName.split(' ')[0] : 'Friend';
+    currentUser = displayName;
+
+    // Store user info
+    localStorage.setItem('2026EventsUser', displayName);
+    localStorage.setItem('2026EventsUserEmail', user.email);
+    localStorage.setItem('2026EventsUserUID', user.uid);
 
     // Hide sign-in screen
     document.getElementById('signInScreen').classList.add('hidden');
@@ -366,21 +412,56 @@ function signIn(member) {
     // Show user bar
     const userBar = document.getElementById('userBar');
     userBar.classList.remove('hidden');
-    document.getElementById('userName').textContent = member;
-    document.getElementById('userAvatar').textContent = member.charAt(0);
-    document.getElementById('userAvatar').style.background = memberColors[member] || '#667eea';
+    document.getElementById('userName').textContent = displayName;
+
+    // Handle profile photo
+    const userPhoto = document.getElementById('userPhoto');
+    const userAvatar = document.getElementById('userAvatar');
+
+    if (user.photoURL) {
+        // Set avatar as fallback initially
+        userAvatar.textContent = displayName.charAt(0);
+        userAvatar.style.background = memberColors[displayName] || '#667eea';
+        userAvatar.style.display = 'flex';
+        userPhoto.style.display = 'none';
+
+        // Load photo with error handling
+        userPhoto.src = user.photoURL;
+
+        userPhoto.onload = function() {
+            // Photo loaded successfully, show it
+            userPhoto.style.display = 'block';
+            userAvatar.style.display = 'none';
+            console.log('Profile photo loaded successfully');
+        };
+
+        userPhoto.onerror = function() {
+            // Photo failed to load, keep avatar
+            console.warn('Failed to load profile photo, using avatar fallback');
+            userPhoto.style.display = 'none';
+            userAvatar.style.display = 'flex';
+        };
+    } else {
+        // No photo URL, show avatar
+        userPhoto.style.display = 'none';
+        userAvatar.style.display = 'flex';
+        userAvatar.textContent = displayName.charAt(0);
+        userAvatar.style.background = memberColors[displayName] || '#667eea';
+    }
 
     // Initialize the app
     updateStats();
     updateAllAttendeeCountsOnCards();
     renderCalendar();
 
-    showToast(`Welcome, ${member}!`, 'success');
+    showToast(`Welcome, ${displayName}!`, 'success');
 }
 
-function signOut() {
+function handleUserSignedOut() {
     currentUser = null;
     localStorage.removeItem('2026EventsUser');
+    localStorage.removeItem('2026EventsUserEmail');
+    localStorage.removeItem('2026EventsUserUID');
 
     // Show sign-in screen
     document.getElementById('signInScreen').classList.remove('hidden');
@@ -392,10 +473,8 @@ function signOut() {
 }
 
 function checkUserSession() {
-    const savedUser = localStorage.getItem('2026EventsUser');
-    if (savedUser && members.includes(savedUser)) {
-        signIn(savedUser);
-    }
+    // Firebase handles session persistence automatically
+    // onAuthStateChanged will fire when auth state is determined
 }
 
 // === Local Storage Functions ===

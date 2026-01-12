@@ -979,6 +979,54 @@ footer p {
     color: var(--text-dark);
 }
 
+/* === Google Sign-In Button === */
+.google-sign-in-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.3s ease;
+    margin: 30px auto;
+    min-width: 280px;
+}
+
+.google-sign-in-btn:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.google-sign-in-btn svg {
+    flex-shrink: 0;
+}
+
+.sign-in-note {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+/* === User Photo === */
+.user-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: none; /* Hidden by default, shown when loaded */
+}
+
 /* === User Bar === */
 .user-bar {
     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -1008,7 +1056,7 @@ footer p {
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    display: flex;
+    display: none; /* Hidden by default */
     align-items: center;
     justify-content: center;
     font-size: 1rem;
