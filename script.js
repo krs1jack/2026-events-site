@@ -116,9 +116,17 @@ let eventsData = {
         title: 'Duke vs UNC Basketball',
         date: '2026-02-07',
         time: '6:30 PM',
-        location: 'TBD',
+        location: 'Chapel Hill, NC',
         category: 'sports',
         link: 'https://goheels.com/sports/mbball'
+    },
+    'duke-unc-mar': {
+        title: 'Duke vs UNC Basketball - Watch Party',
+        date: '2026-03-07',
+        time: '6:30 PM',
+        location: "Kim's House (Game at Duke)",
+        category: 'sports',
+        link: 'https://goduke.com/sports/mbball'
     },
     'ciaa': {
         title: 'CIAA Tournament',
@@ -151,33 +159,72 @@ let eventsData = {
         title: 'Devin Graduation',
         date: '2026-06-13',
         time: 'TBD',
-        location: 'TBD',
-        category: 'family'
+        location: 'Duke University, Durham, NC',
+        category: 'family',
+        link: 'https://commencement.duke.edu/'
     },
-    'ncat-track': {
-        title: 'NC A&T Track Meets',
-        date: null,
-        time: 'Seasonal',
-        location: 'Greensboro, NC',
+    // === TRACK & FIELD ===
+    'liberty-track-jan': {
+        title: 'Liberty University Track Meet',
+        date: '2026-01-30',
+        endDate: '2026-01-31',
+        time: 'Fri-Sat',
+        location: 'Liberty Indoor Track Complex, Lynchburg, VA',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'highpoint-track-mar': {
+        title: 'High Point University Track Meet',
+        date: '2026-03-20',
+        endDate: '2026-03-21',
+        time: 'Fri-Sat',
+        location: 'Vert Stadium, High Point, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'ncat-track-apr': {
+        title: 'NC A&T Track Meet',
+        date: '2026-04-17',
+        endDate: '2026-04-18',
+        time: 'Fri-Sat',
+        location: 'Marcus T. Johnson Track, Greensboro, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'ncat-track-may': {
+        title: 'NC A&T Track Meet',
+        date: '2026-05-01',
+        endDate: '2026-05-02',
+        time: 'Fri-Sat',
+        location: 'Marcus T. Johnson Track, Greensboro, NC',
+        category: 'sports',
+        link: 'https://ncataggies.com/sports/track-and-field'
+    },
+    'caa-track-championship': {
+        title: 'CAA Track Championship',
+        date: '2026-05-15',
+        endDate: '2026-05-16',
+        time: 'Fri-Sat',
+        location: 'Elon, NC',
         category: 'sports',
         link: 'https://ncataggies.com/sports/track-and-field'
     },
     // === FESTIVALS & CULTURE ===
     'dirty-south': {
-        title: 'Dirty South Rodeo / For the Culture',
-        date: '2026-02-28',
-        time: 'TBD',
-        location: 'Durham, NC',
+        title: 'Dirty South Rodeo Festival',
+        date: '2026-07-25',
+        time: '3:00 PM - 8:00 PM',
+        location: 'Raleigh/Durham, NC',
         category: 'festivals',
-        link: 'https://www.eventbrite.com/d/nc--durham/dirty-south-rodeo/'
+        link: 'https://posh.vip/e/dirty-south-rodeo-festival-raleighdurham-nc'
     },
     'adult-recess': {
-        title: 'Adult Recess Festival',
+        title: '4th Annual Adult Recess Festival',
         date: '2026-04-25',
-        time: '1:00 PM - 7:00 PM',
-        location: 'Raleigh, NC',
+        time: '1:00 PM',
+        location: 'Buffaloe Road Athletic Park, Raleigh',
         category: 'festivals',
-        link: 'https://www.adultrecess.co/'
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
     },
     'tampa-heritage': {
         title: 'Tampa Black Heritage Festival',
@@ -285,6 +332,30 @@ let eventsData = {
         link: 'https://www.blackinportugal.com/'
     },
     // === WELLNESS & NATURE ===
+    'carolina-beach': {
+        title: 'Carolina Beach Adventure: Hike, Kayak & Chill',
+        date: '2026-05-09',
+        time: '9:00 AM - 5:00 PM',
+        location: 'Carolina Beach Boardwalk Amusement Park',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'hike-mine-creek': {
+        title: 'Hike & Chill Mine Creek Greenway',
+        date: '2026-02-07',
+        time: '9:30 AM',
+        location: 'Mine Creek Greenway',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
+    'hike-porte-noire': {
+        title: 'Hike & Chill at Porte NOIRE Farms & Gardens',
+        date: '2026-03-07',
+        time: '9:30 AM',
+        location: 'Porte NOIRE Gardens',
+        category: 'wellness',
+        link: 'https://www.eventbrite.com/o/lets-get-social-raleigh-51158297753'
+    },
     'waterfalls': {
         title: 'NC Waterfalls Day Trip',
         date: null,
