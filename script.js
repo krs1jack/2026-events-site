@@ -237,11 +237,6 @@ window.removeMember = removeMember;
 window.openManageMembers = openManageMembers;
 window.closeManageMembers = closeManageMembers;
 
-// Current state
-let currentEventId = null;
-let currentMonth = new Date(2026, 0); // January 2026
-let currentUser = null;
-
 // === Generate All Sundays for 2026 (for date picker) ===
 function getSundaysIn2026() {
     const sundays = [];
