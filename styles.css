@@ -347,6 +347,35 @@ body {
 .event-tag.bonding { background: #fce7f3; color: #db2777; }
 .event-tag.recurring { background: #f3e8ff; color: #9333ea; }
 .event-tag.spiritual { background: #fef3c7; color: #ca8a04; }
+.event-tag.track { background: #dbeafe; color: #2563eb; }
+.event-tag.championship { background: #fef3c7; color: #ca8a04; }
+
+/* Event Link Button */
+.event-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.event-link-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.event-link-btn .link-icon {
+    font-size: 0.9rem;
+}
 
 .event-note {
     font-size: 0.8rem;

@@ -546,6 +546,33 @@ function addChurchEventCard(event) {
     }
 }
 
+// === Add Event Links to Cards ===
+function addEventLinksToCards() {
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventId = card.dataset.eventId;
+        const eventData = eventsData[eventId];
+
+        if (eventData && eventData.link) {
+            // Check if link already exists
+            if (card.querySelector('.event-link-btn')) return;
+
+            const linkBtn = document.createElement('a');
+            linkBtn.href = eventData.link;
+            linkBtn.target = '_blank';
+            linkBtn.rel = 'noopener noreferrer';
+            linkBtn.className = 'event-link-btn';
+            linkBtn.innerHTML = '<span class="link-icon">&#128279;</span> Info';
+            linkBtn.title = 'View event details';
+
+            // Add to event-details section
+            const detailsSection = card.querySelector('.event-details');
+            if (detailsSection) {
+                detailsSection.appendChild(linkBtn);
+            }
+        }
+    });
+}
+
 // === Initialize Application ===
 document.addEventListener('DOMContentLoaded', function() {
     loadConfirmedChurchEvents();
@@ -553,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCustomEvents();
     renderConfirmedChurchCards();
     populateSundaySelects();
+    addEventLinksToCards();
     checkUserSession();
     setupSignIn();
     setupFilterButtons();
