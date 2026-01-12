@@ -954,6 +954,7 @@ function updateStats() {
     today.setHours(0, 0, 0, 0); // Reset to start of day for accurate comparison
     let upcomingCount = 0;
     let signedUpCount = 0;
+    const userEvents = [];
 
     Object.entries(eventsData).forEach(([eventId, event]) => {
         if (event.date) {
@@ -972,12 +973,74 @@ function updateStats() {
             const eventRSVP = rsvpData[eventId] || {};
             if (eventRSVP[currentUser] === 'going') {
                 signedUpCount++;
+                userEvents.push({ id: eventId, ...event });
             }
         }
     });
 
     document.getElementById('upcomingEvents').textContent = upcomingCount;
     document.getElementById('signedUpEvents').textContent = signedUpCount;
+
+    // Update personalized "Your Events" section
+    updateYourEventsSection(userEvents, signedUpCount);
+}
+
+// === Update Your Events Section ===
+function updateYourEventsSection(userEvents, count) {
+    const section = document.getElementById('yourEventsSection');
+    const list = document.getElementById('yourEventsList');
+    const countEl = document.getElementById('yourEventsCount');
+    const noEventsMsg = document.getElementById('noEventsMessage');
+
+    if (!currentUser) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+    countEl.textContent = count;
+
+    // Clear existing list
+    list.innerHTML = '';
+
+    if (userEvents.length === 0) {
+        noEventsMsg.style.display = 'block';
+        list.style.display = 'none';
+        return;
+    }
+
+    noEventsMsg.style.display = 'none';
+    list.style.display = 'flex';
+
+    // Sort by date
+    userEvents.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date) - new Date(b.date);
+    });
+
+    // Create event chips
+    userEvents.forEach(event => {
+        const chip = document.createElement('div');
+        chip.className = `your-event-chip ${event.category || ''}`;
+
+        const dateStr = event.date ? formatEventDate(event.date) : 'TBD';
+
+        chip.innerHTML = `
+            <span class="chip-date">${dateStr}</span>
+            <span class="chip-title">${event.title}</span>
+            <button class="chip-view" onclick="openRSVP('${event.id}')">View</button>
+        `;
+
+        list.appendChild(chip);
+    });
+}
+
+// === Format Event Date for Chips ===
+function formatEventDate(dateStr) {
+    const date = new Date(dateStr + 'T12:00:00');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}`;
 }
 
 // === Add Event Functions ===
