@@ -1752,3 +1752,375 @@ function escapeICS(text) {
 }
 
 window.exportToGoogleCalendar = exportToGoogleCalendar;
+
+// === Export All Events to Calendar ===
+function exportAllEventsToCalendar() {
+    // Get all events with dates (excluding TBD events)
+    const allEvents = [];
+
+    Object.entries(eventsData).forEach(([id, event]) => {
+        if (event.date) {
+            allEvents.push({ id, ...event });
+        }
+    });
+
+    if (allEvents.length === 0) {
+        showToast('No events available to export!', 'error');
+        return;
+    }
+
+    // Generate ICS file content
+    let ics = 'BEGIN:VCALENDAR\r\n';
+    ics += 'VERSION:2.0\r\n';
+    ics += 'PRODID:-//2026 Culture Travel Fun//EN\r\n';
+    ics += 'CALSCALE:GREGORIAN\r\n';
+    ics += 'METHOD:PUBLISH\r\n';
+    ics += 'X-WR-CALNAME:2026 All Events - Culture Travel & Fun\r\n';
+
+    allEvents.forEach(event => {
+        const startDate = formatDateForICS(event.date);
+        const endDate = event.endDate ? formatDateForICS(event.endDate) : startDate;
+
+        ics += 'BEGIN:VEVENT\r\n';
+        ics += `UID:${event.id}@2026events\r\n`;
+        ics += `DTSTAMP:${formatDateTimeForICS(new Date())}\r\n`;
+        ics += `DTSTART;VALUE=DATE:${startDate}\r\n`;
+        ics += `DTEND;VALUE=DATE:${incrementDate(endDate)}\r\n`;
+        ics += `SUMMARY:${escapeICS(event.title)}\r\n`;
+        ics += `LOCATION:${escapeICS(event.location)}\r\n`;
+        
+        // Add category as description
+        let description = event.time;
+        if (event.category) {
+            description += ` | Category: ${event.category}`;
+        }
+        ics += `DESCRIPTION:${escapeICS(description)}\r\n`;
+        
+        // Add categories field for calendar filtering
+        if (event.category) {
+            ics += `CATEGORIES:${event.category.toUpperCase()}\r\n`;
+        }
+        
+        ics += 'END:VEVENT\r\n';
+    });
+
+    ics += 'END:VCALENDAR\r\n';
+
+    // Download ICS file
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const filename = currentUser ? `2026-all-events-${currentUser.toLowerCase()}.ics` : '2026-all-events.ics';
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    showToast(`${allEvents.length} events exported! Import the .ics file into Google Calendar.`, 'success');
+}
+
+window.exportAllEventsToCalendar = exportAllEventsToCalendar;
+
+// === Print Events ===
+function printEvents() {
+    // Get events to print - if user is logged in and has RSVPs, show their events; otherwise show all
+    let eventsToPrint = [];
+    let printTitle = '2026 Culture, Travel & Fun - All Events';
+    
+    if (currentUser) {
+        // Get user's events
+        Object.entries(eventsData).forEach(([id, event]) => {
+            const eventRSVP = rsvpData[id] || {};
+            if (eventRSVP[currentUser] === 'going' && event.date) {
+                eventsToPrint.push({ id, ...event });
+            }
+        });
+        
+        if (eventsToPrint.length > 0) {
+            printTitle = `2026 Events - ${currentUser}'s Calendar`;
+        }
+    }
+    
+    // If no personal events or not logged in, print all events
+    if (eventsToPrint.length === 0) {
+        Object.entries(eventsData).forEach(([id, event]) => {
+            if (event.date) {
+                eventsToPrint.push({ id, ...event });
+            }
+        });
+    }
+    
+    if (eventsToPrint.length === 0) {
+        showToast('No events to print!', 'error');
+        return;
+    }
+    
+    // Sort events by date
+    eventsToPrint.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date) - new Date(b.date);
+    });
+    
+    // Create print window
+    const printWindow = window.open('', '_blank');
+    
+    // Generate print HTML
+    let printHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${printTitle}</title>
+    <style>
+        @media print {
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24pt;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 12pt;
+        }
+        
+        .event-list {
+            margin-top: 20px;
+        }
+        
+        .event {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-left: 5px solid #667eea;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .event.music { border-left-color: #9333ea; }
+        .event.sports { border-left-color: #2563eb; }
+        .event.family { border-left-color: #ec4899; }
+        .event.festivals { border-left-color: #ea580c; }
+        .event.travel { border-left-color: #16a34a; }
+        .event.wellness { border-left-color: #0891b2; }
+        .event.church { border-left-color: #ca8a04; }
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .event-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .event-date {
+            font-size: 12pt;
+            color: #667eea;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .event-details {
+            font-size: 11pt;
+            color: #475569;
+            margin-top: 8px;
+        }
+        
+        .event-detail-row {
+            margin: 5px 0;
+        }
+        
+        .event-detail-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 80px;
+        }
+        
+        .event-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 9pt;
+            font-weight: bold;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+        
+        .category-music { background: #f3e8ff; color: #9333ea; }
+        .category-sports { background: #dbeafe; color: #2563eb; }
+        .category-family { background: #fce7f3; color: #ec4899; }
+        .category-festivals { background: #ffedd5; color: #ea580c; }
+        .category-travel { background: #dcfce7; color: #16a34a; }
+        .category-wellness { background: #cffafe; color: #0891b2; }
+        .category-church { background: #fef9c3; color: #ca8a04; }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #999;
+            font-size: 10pt;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .notes-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e1;
+        }
+        
+        .notes-label {
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+        
+        .notes-content {
+            color: #64748b;
+            font-style: italic;
+            font-size: 10pt;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>${printTitle}</h1>
+    <div class="subtitle">
+        Generated on ${new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        })}
+    </div>
+    
+    <div class="event-list">`;
+    
+    // Add each event
+    eventsToPrint.forEach(event => {
+        const eventDate = event.date ? new Date(event.date + 'T12:00:00') : null;
+        const dateStr = eventDate ? eventDate.toLocaleDateString('en-US', { 
+            weekday: 'short',
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        }) : 'TBD';
+        
+        const endDateStr = event.endDate ? ' - ' + new Date(event.endDate + 'T12:00:00').toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric' 
+        }) : '';
+        
+        // Get notes for this event if they exist
+        const eventNotes = notesData[event.id] || '';
+        const eventTravel = travelData[event.id] || {};
+        
+        printHTML += `
+        <div class="event ${event.category || ''}">
+            <div class="event-header">
+                <h2 class="event-title">${escapeHtml(event.title)}</h2>
+                <div class="event-date">${dateStr}${endDateStr}</div>
+            </div>
+            <div class="event-details">
+                <div class="event-detail-row">
+                    <span class="event-detail-label">Time:</span>
+                    ${escapeHtml(event.time || 'TBD')}
+                </div>
+                <div class="event-detail-row">
+                    <span class="event-detail-label">Location:</span>
+                    ${escapeHtml(event.location || 'TBD')}
+                </div>`;
+        
+        if (event.category) {
+            printHTML += `
+                <div class="event-category category-${event.category}">
+                    ${event.category}
+                </div>`;
+        }
+        
+        // Add travel details if they exist
+        if (eventTravel.hotel || eventTravel.flight || eventTravel.transport) {
+            printHTML += `<div class="notes-section">
+                <div class="notes-label">Travel Details:</div>`;
+            
+            if (eventTravel.hotel) {
+                printHTML += `<div class="event-detail-row">
+                    <span class="event-detail-label">Hotel:</span>
+                    ${escapeHtml(eventTravel.hotel)}
+                </div>`;
+            }
+            if (eventTravel.flight) {
+                printHTML += `<div class="event-detail-row">
+                    <span class="event-detail-label">Flight:</span>
+                    ${escapeHtml(eventTravel.flight)}
+                </div>`;
+            }
+            if (eventTravel.transport) {
+                printHTML += `<div class="event-detail-row">
+                    <span class="event-detail-label">Transport:</span>
+                    ${escapeHtml(eventTravel.transport)}
+                </div>`;
+            }
+            
+            printHTML += `</div>`;
+        }
+        
+        // Add notes if they exist
+        if (eventNotes) {
+            printHTML += `
+                <div class="notes-section">
+                    <div class="notes-label">Notes:</div>
+                    <div class="notes-content">${escapeHtml(eventNotes)}</div>
+                </div>`;
+        }
+        
+        printHTML += `
+            </div>
+        </div>`;
+    });
+    
+    printHTML += `
+    </div>
+    
+    <div class="footer">
+        ${printTitle} | www.2026events.com
+    </div>
+    
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>`;
+    
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+    
+    showToast(`Print preview opened with ${eventsToPrint.length} events`, 'success');
+}
+
+window.printEvents = printEvents;

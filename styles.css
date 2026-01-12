@@ -1191,6 +1191,42 @@ footer p {
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
+.export-all-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.export-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.print-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
+}
+
 /* === Add Event Form === */
 .add-event-form {
     display: flex;
@@ -1267,7 +1303,9 @@ footer p {
     }
 
     .add-event-btn,
-    .export-btn {
+    .export-btn,
+    .export-all-btn,
+    .print-btn {
         padding: 10px 15px;
         font-size: 0.85rem;
     }
