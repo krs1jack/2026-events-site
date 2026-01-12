@@ -1339,3 +1339,212 @@ footer p {
         width: 100%;
     }
 }
+
+/* === Church Selection === */
+.church-selection {
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
+    border-radius: 12px;
+    border: 2px solid #f59e0b;
+}
+
+.church-selection.hidden {
+    display: none;
+}
+
+.church-selection h4 {
+    margin: 0 0 15px 0;
+    color: #92400e;
+    font-size: 1rem;
+}
+
+.church-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.church-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.church-option:hover {
+    border-color: #f59e0b;
+}
+
+.church-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #f59e0b;
+}
+
+.church-option input[type="radio"]:checked + .church-label {
+    color: #92400e;
+}
+
+.church-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.church-label strong {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.church-label small {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* === Travel Details Section === */
+.travel-details-section {
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    border-radius: 12px;
+    border: 2px solid #3b82f6;
+}
+
+.travel-details-section h4 {
+    margin: 0 0 15px 0;
+    color: #1e40af;
+    font-size: 1rem;
+}
+
+.travel-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.travel-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.travel-field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e40af;
+}
+
+.travel-field input {
+    padding: 10px 12px;
+    border: 2px solid #93c5fd;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.travel-field input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.travel-field input::placeholder {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+/* === Church Invitation Cards === */
+.section-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin: -10px 0 20px 0;
+}
+
+.church-invitation {
+    border: 2px dashed #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.church-invitation .event-date.invitation {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.church-icon {
+    font-size: 2rem;
+}
+
+.invite-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.event-tag.host {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.church-invite-action {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.sunday-select {
+    padding: 10px 12px;
+    border: 2px solid #fbbf24;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.sunday-select:focus {
+    outline: none;
+    border-color: #f59e0b;
+}
+
+.add-church-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.add-church-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+/* Confirmed Church Event Cards */
+.confirmed-church {
+    border: 2px solid #22c55e;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.confirmed-church .event-tag.church {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+}

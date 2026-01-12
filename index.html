@@ -728,80 +728,70 @@
             <!-- Church & Sunday -->
             <div class="category-section" data-category="church">
                 <h2 class="category-title church">Church & Sunday</h2>
+                <p class="section-subtitle">Select a Sunday to add a church service</p>
                 <div class="events-grid">
 
-                    <article class="event-card church" data-event-id="church-home">
-                        <div class="event-date flexible">
-                            <span class="month">Any</span>
-                            <span class="day">Sunday</span>
-                            <span class="year">2026</span>
+                    <!-- Jenn's Church Invitation -->
+                    <article class="event-card church church-invitation">
+                        <div class="event-date invitation">
+                            <span class="church-icon">⛪</span>
+                            <span class="invite-text">Invitation</span>
                         </div>
                         <div class="event-details">
-                            <h3>Church Sunday - Home</h3>
-                            <p class="event-time">Sunday Morning</p>
-                            <p class="event-location">Home Church</p>
-                            <span class="event-tag spiritual">Spiritual</span>
-                            <p class="event-note">Can pair with brunch or cultural events</p>
-                        </div>
-                        <div class="event-rsvp">
-                            <button class="rsvp-btn" onclick="openRSVP('church-home')">RSVP</button>
-                            <div class="attendee-count"><span class="count">0</span> going</div>
-                        </div>
-                    </article>
-
-                    <article class="event-card church" data-event-id="church-durham">
-                        <div class="event-date flexible">
-                            <span class="month">Any</span>
-                            <span class="day">Sunday</span>
-                            <span class="year">2026</span>
-                        </div>
-                        <div class="event-details">
-                            <h3>Church Sunday - Durham</h3>
-                            <p class="event-time">Sunday Morning</p>
-                            <p class="event-location">Durham, NC</p>
-                            <span class="event-tag spiritual">Spiritual</span>
-                        </div>
-                        <div class="event-rsvp">
-                            <button class="rsvp-btn" onclick="openRSVP('church-durham')">RSVP</button>
-                            <div class="attendee-count"><span class="count">0</span> going</div>
-                        </div>
-                    </article>
-
-                    <article class="event-card church" data-event-id="church-ws">
-                        <div class="event-date flexible">
-                            <span class="month">Any</span>
-                            <span class="day">Sunday</span>
-                            <span class="year">2026</span>
-                        </div>
-                        <div class="event-details">
-                            <h3>Church Sunday - Winston-Salem</h3>
-                            <p class="event-time">Sunday Morning</p>
+                            <h3>Jenn's Church</h3>
+                            <p class="event-time">Sunday Morning Service</p>
                             <p class="event-location">Winston-Salem, NC</p>
-                            <span class="event-tag spiritual">Spiritual</span>
+                            <span class="event-tag host">Hosted by Jenn</span>
                         </div>
-                        <div class="event-rsvp">
-                            <button class="rsvp-btn" onclick="openRSVP('church-ws')">RSVP</button>
-                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        <div class="church-invite-action">
+                            <select class="sunday-select">
+                                <option value="">Select a Sunday...</option>
+                            </select>
+                            <button class="add-church-btn" data-church="jenns-church">Add Service</button>
                         </div>
                     </article>
 
-                    <article class="event-card church" data-event-id="church-charlotte">
-                        <div class="event-date flexible">
-                            <span class="month">Any</span>
-                            <span class="day">Sunday</span>
-                            <span class="year">2026</span>
+                    <!-- Kim's Church Invitation (First Calvary) -->
+                    <article class="event-card church church-invitation">
+                        <div class="event-date invitation">
+                            <span class="church-icon">⛪</span>
+                            <span class="invite-text">Invitation</span>
                         </div>
                         <div class="event-details">
-                            <h3>Church Sunday - Charlotte</h3>
-                            <p class="event-time">Sunday Morning</p>
-                            <p class="event-location">Charlotte, NC</p>
-                            <span class="event-tag spiritual">Spiritual</span>
+                            <h3>First Calvary Baptist Church</h3>
+                            <p class="event-time">Sunday Morning Service</p>
+                            <p class="event-location">Durham, NC</p>
+                            <span class="event-tag host">Hosted by Kim</span>
                         </div>
-                        <div class="event-rsvp">
-                            <button class="rsvp-btn" onclick="openRSVP('church-charlotte')">RSVP</button>
-                            <div class="attendee-count"><span class="count">0</span> going</div>
+                        <div class="church-invite-action">
+                            <select class="sunday-select">
+                                <option value="">Select a Sunday...</option>
+                            </select>
+                            <button class="add-church-btn" data-church="first-calvary">Add Service</button>
                         </div>
                     </article>
+
+                    <!-- Dee's Church Invitation -->
+                    <article class="event-card church church-invitation">
+                        <div class="event-date invitation">
+                            <span class="church-icon">⛪</span>
+                            <span class="invite-text">Invitation</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Dee's Church</h3>
+                            <p class="event-time">Sunday Morning Service</p>
+                            <p class="event-location">Charlotte, NC</p>
+                            <span class="event-tag host">Hosted by Dee</span>
+                        </div>
+                        <div class="church-invite-action">
+                            <select class="sunday-select">
+                                <option value="">Select a Sunday...</option>
+                            </select>
+                            <button class="add-church-btn" data-church="dees-church">Add Service</button>
+                        </div>
+                    </article>
+
+                    <!-- Confirmed church events will be added here dynamically -->
 
                 </div>
             </div>
@@ -916,6 +906,25 @@
                 <div class="notes-section">
                     <label for="eventNotes">Notes:</label>
                     <textarea id="eventNotes" placeholder="Add any notes about this event..."></textarea>
+                </div>
+
+                <!-- Travel Details Section -->
+                <div class="travel-details-section">
+                    <h4>Travel Details (Optional):</h4>
+                    <div class="travel-fields">
+                        <div class="travel-field">
+                            <label for="hotelInfo">Hotel:</label>
+                            <input type="text" id="hotelInfo" placeholder="Hotel name, address, confirmation #...">
+                        </div>
+                        <div class="travel-field">
+                            <label for="flightInfo">Flight:</label>
+                            <input type="text" id="flightInfo" placeholder="Flight details, times, confirmation...">
+                        </div>
+                        <div class="travel-field">
+                            <label for="transportInfo">Transportation:</label>
+                            <input type="text" id="transportInfo" placeholder="Rental car, rideshare plans...">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="rsvp-actions">

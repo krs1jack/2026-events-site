@@ -13,6 +13,28 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
+// === Church Locations ===
+const churchLocations = {
+    'jenns-church': {
+        name: "Jenn's Church",
+        location: 'Winston-Salem, NC',
+        host: 'Jenn'
+    },
+    'first-calvary': {
+        name: "First Calvary Baptist Church",
+        location: 'Durham, NC',
+        host: 'Kim'
+    },
+    'dees-church': {
+        name: "Dee's Church",
+        location: 'Charlotte, NC',
+        host: 'Dee'
+    }
+};
+
+// === Travel Details Storage ===
+let travelData = {};
+
 // === Event Data Store ===
 let eventsData = {
     // === BIRTHDAYS ===
@@ -313,52 +335,198 @@ let currentEventId = null;
 let currentMonth = new Date(2026, 0); // January 2026
 let currentUser = null;
 
-// === Generate All Sundays for 2026 ===
-function generateSundayChurchEvents() {
+// === Generate All Sundays for 2026 (for date picker) ===
+function getSundaysIn2026() {
     const sundays = [];
-    const date = new Date(2026, 0, 1); // Start Jan 1, 2026
+    const date = new Date(2026, 0, 1);
 
     // Find first Sunday
     while (date.getDay() !== 0) {
         date.setDate(date.getDate() + 1);
     }
 
-    // Generate all Sundays for 2026
+    // Collect all Sundays for 2026
     while (date.getFullYear() === 2026) {
         const dateStr = date.toISOString().split('T')[0];
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const monthName = monthNames[date.getMonth()];
         const dayNum = date.getDate();
 
-        const eventId = `church-sunday-${dateStr}`;
-        eventsData[eventId] = {
-            title: `Church Sunday - ${monthName} ${dayNum}`,
+        sundays.push({
             date: dateStr,
-            time: 'Sunday Morning',
-            location: 'TBD - Choose Location',
-            category: 'church',
-            isGenerated: true
-        };
+            label: `${monthName} ${dayNum}, 2026`
+        });
 
-        sundays.push(eventId);
         date.setDate(date.getDate() + 7);
     }
 
     return sundays;
 }
 
+// === Church Event Storage ===
+let confirmedChurchEvents = {};
+
+function loadConfirmedChurchEvents() {
+    try {
+        const saved = localStorage.getItem('2026ConfirmedChurch');
+        if (saved) {
+            confirmedChurchEvents = JSON.parse(saved);
+            // Add confirmed church events to eventsData
+            Object.values(confirmedChurchEvents).forEach(event => {
+                eventsData[event.id] = event;
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load confirmed church events:', error);
+    }
+}
+
+function saveConfirmedChurchEvents() {
+    localStorage.setItem('2026ConfirmedChurch', JSON.stringify(confirmedChurchEvents));
+}
+
+// === Add Church Event for a Specific Sunday ===
+function addChurchEvent(churchId, sundayDate) {
+    const church = churchLocations[churchId];
+    if (!church) return null;
+
+    const dateObj = new Date(sundayDate + 'T12:00:00');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthName = monthNames[dateObj.getMonth()];
+    const dayNum = dateObj.getDate();
+
+    const eventId = `church-${churchId}-${sundayDate}`;
+
+    // Check if already exists
+    if (eventsData[eventId]) {
+        showToast('This church service is already added!', 'error');
+        return null;
+    }
+
+    const newEvent = {
+        id: eventId,
+        title: `${church.name} - ${monthName} ${dayNum}`,
+        date: sundayDate,
+        time: 'Sunday Morning',
+        location: `${church.location} (${church.host}'s Church)`,
+        category: 'church',
+        churchId: churchId,
+        isConfirmedChurch: true
+    };
+
+    // Add to data stores
+    eventsData[eventId] = newEvent;
+    confirmedChurchEvents[eventId] = newEvent;
+    saveConfirmedChurchEvents();
+
+    // Create and add card to DOM
+    addChurchEventCard(newEvent);
+
+    showToast(`Added ${church.name} for ${monthName} ${dayNum}!`, 'success');
+    updateStats();
+
+    return eventId;
+}
+
+function addChurchEventCard(event) {
+    const grid = document.querySelector('.category-section[data-category="church"] .events-grid');
+    if (!grid) return;
+
+    const dateObj = new Date(event.date + 'T12:00:00');
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    const card = document.createElement('article');
+    card.className = 'event-card church confirmed-church';
+    card.dataset.eventId = event.id;
+    card.innerHTML = `
+        <div class="event-date">
+            <span class="month">${monthNames[dateObj.getMonth()]}</span>
+            <span class="day">${dateObj.getDate()}</span>
+            <span class="year">2026</span>
+        </div>
+        <div class="event-details">
+            <h3>${event.title}</h3>
+            <p class="event-time">${event.time}</p>
+            <p class="event-location">${event.location}</p>
+            <span class="event-tag church">Confirmed</span>
+        </div>
+        <div class="event-rsvp">
+            <button class="rsvp-btn" onclick="openRSVP('${event.id}')">RSVP</button>
+            <div class="attendee-count"><span class="count">0</span> going</div>
+        </div>
+    `;
+
+    // Insert after invitation cards
+    const invitationCards = grid.querySelectorAll('.church-invitation');
+    if (invitationCards.length > 0) {
+        const lastInvitation = invitationCards[invitationCards.length - 1];
+        lastInvitation.after(card);
+    } else {
+        grid.appendChild(card);
+    }
+}
+
 // === Initialize Application ===
 document.addEventListener('DOMContentLoaded', function() {
-    generateSundayChurchEvents();
+    loadConfirmedChurchEvents();
     loadDataFromStorage();
     loadCustomEvents();
+    renderConfirmedChurchCards();
+    populateSundaySelects();
     checkUserSession();
     setupSignIn();
     setupFilterButtons();
     setupViewToggle();
     setupCalendarNavigation();
     setupAddEventButton();
+    setupChurchInvitations();
 });
+
+// === Render saved church events on load ===
+function renderConfirmedChurchCards() {
+    Object.values(confirmedChurchEvents).forEach(event => {
+        addChurchEventCard(event);
+    });
+}
+
+// === Populate Sunday select dropdowns ===
+function populateSundaySelects() {
+    const sundays = getSundaysIn2026();
+    const selects = document.querySelectorAll('.sunday-select');
+
+    selects.forEach(select => {
+        sundays.forEach(sunday => {
+            const option = document.createElement('option');
+            option.value = sunday.date;
+            option.textContent = sunday.label;
+            select.appendChild(option);
+        });
+    });
+}
+
+// === Setup Church Invitation Buttons ===
+function setupChurchInvitations() {
+    document.querySelectorAll('.add-church-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const churchId = this.dataset.church;
+            const select = this.closest('.church-invitation').querySelector('.sunday-select');
+            const sundayDate = select.value;
+
+            if (!sundayDate) {
+                showToast('Please select a Sunday first', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                showToast('Please sign in first', 'error');
+                return;
+            }
+
+            addChurchEvent(churchId, sundayDate);
+            select.value = ''; // Reset selection
+        });
+    });
+}
 
 // === Firebase Auth Functions ===
 function setupSignIn() {
@@ -498,6 +666,7 @@ function loadDataFromStorage() {
     try {
         const savedRSVP = localStorage.getItem('2026EventsRSVP');
         const savedNotes = localStorage.getItem('2026EventsNotes');
+        const savedTravel = localStorage.getItem('2026EventsTravel');
 
         if (savedRSVP) {
             rsvpData = JSON.parse(savedRSVP);
@@ -505,16 +674,21 @@ function loadDataFromStorage() {
         if (savedNotes) {
             notesData = JSON.parse(savedNotes);
         }
+        if (savedTravel) {
+            travelData = JSON.parse(savedTravel);
+        }
     } catch (error) {
         console.error('Failed to load data from storage:', error);
         rsvpData = {};
         notesData = {};
+        travelData = {};
     }
 }
 
 function saveDataToStorage() {
     localStorage.setItem('2026EventsRSVP', JSON.stringify(rsvpData));
     localStorage.setItem('2026EventsNotes', JSON.stringify(notesData));
+    localStorage.setItem('2026EventsTravel', JSON.stringify(travelData));
 }
 
 function loadCustomEvents() {
@@ -642,6 +816,12 @@ function openRSVP(eventId) {
     // Set notes
     document.getElementById('eventNotes').value = eventNotes;
 
+    // Load travel details
+    const eventTravel = travelData[eventId] || {};
+    document.getElementById('hotelInfo').value = eventTravel.hotel || '';
+    document.getElementById('flightInfo').value = eventTravel.flight || '';
+    document.getElementById('transportInfo').value = eventTravel.transport || '';
+
     // Update attendees list
     updateAttendeesDisplay(eventRSVP);
 
@@ -676,6 +856,22 @@ function saveRSVP() {
         notesData[currentEventId] = notes;
     } else {
         delete notesData[currentEventId];
+    }
+
+    // Save travel details
+    const hotel = document.getElementById('hotelInfo').value;
+    const flight = document.getElementById('flightInfo').value;
+    const transport = document.getElementById('transportInfo').value;
+
+    // Only save if there's travel data
+    if (hotel || flight || transport) {
+        travelData[currentEventId] = {
+            hotel: hotel || '',
+            flight: flight || '',
+            transport: transport || ''
+        };
+    } else {
+        delete travelData[currentEventId];
     }
 
     // Persist to storage
