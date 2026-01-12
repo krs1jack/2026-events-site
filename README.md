@@ -67,10 +67,10 @@ To ensure Google sign-in works properly, verify the following in your Firebase C
 
 This site can be deployed to any static hosting service:
 
-- **Vercel**: Already configured (see `.vercel` folder)
-- **GitHub Pages**
-- **Netlify**
-- **Firebase Hosting**
+- **Vercel**: Simple deployment with `vercel` CLI or GitHub integration
+- **GitHub Pages**: Push to `gh-pages` branch
+- **Netlify**: Connect GitHub repo and deploy
+- **Firebase Hosting**: Use `firebase deploy` command
 
 ## Usage
 
@@ -119,7 +119,8 @@ This site can be deployed to any static hosting service:
 ├── script.js           # JavaScript logic and Firebase integration
 ├── styles.css          # All styling and responsive design
 ├── .gitignore          # Git ignore configuration
-└── README.md           # This file
+├── README.md           # This file - project documentation
+└── FIREBASE_SETUP.md   # Firebase configuration guide
 ```
 
 ### Data Storage

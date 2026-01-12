@@ -105,7 +105,22 @@ After completing the setup, verify everything is configured correctly:
 
 **Solution**:
 1. Allow popups for your domain in browser settings
-2. Or use `signInWithRedirect()` instead of `signInWithPopup()` (requires code change)
+2. Or switch to redirect flow by updating `signInWithGoogle()` function in `script.js`:
+   ```javascript
+   function signInWithGoogle() {
+       auth.signInWithRedirect(googleProvider);
+   }
+   ```
+   Then add a redirect handler after Firebase initialization:
+   ```javascript
+   auth.getRedirectResult().then((result) => {
+       if (result.user) {
+           // User signed in successfully
+       }
+   }).catch((error) => {
+       console.error('Sign-in error:', error);
+   });
+   ```
 
 ### Issue: Users can't stay signed in
 
