@@ -392,7 +392,18 @@ let eventsData = {
 };
 
 // Members list
-const members = ['Sam', 'Charisse', 'Dee', 'Kim', 'Jenn', 'Arline', 'Treva', 'Kesha'];
+const members = ['Sam', 'Charisse', 'Dee', 'Kim', 'Jenn', 'Arline', 'Treva', 'Kesha', 'Dana'];
+
+// Admin emails - only these users can delete events
+const adminEmails = [
+    'krs1jack@gmail.com'  // Add admin emails here
+];
+
+// Check if current user is admin
+function isAdmin() {
+    const userEmail = localStorage.getItem('2026EventsUserEmail');
+    return userEmail && adminEmails.includes(userEmail.toLowerCase());
+}
 
 // Member colors for avatars
 const memberColors = {
@@ -572,6 +583,135 @@ function addEventLinksToCards() {
             }
         }
     });
+}
+
+// === Add Admin Controls to Cards ===
+function addAdminControls() {
+    if (!isAdmin()) return;
+
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventId = card.dataset.eventId;
+
+        // Skip if delete button already exists
+        if (card.querySelector('.admin-delete-btn')) return;
+
+        // Skip church invitation cards
+        if (card.classList.contains('church-invitation')) return;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'admin-delete-btn';
+        deleteBtn.innerHTML = '&#128465;';
+        deleteBtn.title = 'Delete event (Admin only)';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            confirmDeleteEvent(eventId);
+        };
+
+        card.appendChild(deleteBtn);
+    });
+}
+
+// === Delete Event with Confirmation ===
+function confirmDeleteEvent(eventId) {
+    const event = eventsData[eventId];
+    if (!event) return;
+
+    const modal = document.createElement('div');
+    modal.className = 'delete-confirm-modal';
+    modal.innerHTML = `
+        <div class="delete-confirm-content">
+            <h3>Delete Event?</h3>
+            <p>Are you sure you want to delete "<strong>${event.title}</strong>"?</p>
+            <p class="delete-warning">This action cannot be undone.</p>
+            <div class="delete-confirm-buttons">
+                <button class="cancel-delete-btn" onclick="closeDeleteModal()">Cancel</button>
+                <button class="confirm-delete-btn" onclick="deleteEvent('${eventId}')">Delete</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeDeleteModal() {
+    const modal = document.querySelector('.delete-confirm-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+function deleteEvent(eventId) {
+    // Remove from DOM
+    const card = document.querySelector(`[data-event-id="${eventId}"]`);
+    if (card) {
+        card.style.transform = 'scale(0.8)';
+        card.style.opacity = '0';
+        setTimeout(() => card.remove(), 300);
+    }
+
+    // Remove from data
+    delete eventsData[eventId];
+
+    // Remove from custom events if it exists there
+    if (customEvents[eventId]) {
+        delete customEvents[eventId];
+        saveCustomEvents();
+    }
+
+    // Remove from confirmed church events if applicable
+    if (confirmedChurchEvents[eventId]) {
+        delete confirmedChurchEvents[eventId];
+        saveConfirmedChurchEvents();
+    }
+
+    // Remove RSVPs for this event
+    if (rsvpData[eventId]) {
+        delete rsvpData[eventId];
+        saveDataToStorage();
+    }
+
+    closeDeleteModal();
+    showToast('Event deleted successfully', 'success');
+    updateYourEventsSection();
+}
+
+// === Print/Share Functions ===
+function printCalendar() {
+    window.print();
+}
+
+function shareCalendar() {
+    const shareData = {
+        title: '2026 Events Calendar',
+        text: 'Check out our 2026 events calendar!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => showToast('Shared successfully!', 'success'))
+            .catch((err) => {
+                if (err.name !== 'AbortError') {
+                    copyToClipboard(window.location.href);
+                }
+            });
+    } else {
+        copyToClipboard(window.location.href);
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Link copied to clipboard!', 'success');
+    }).catch(() => {
+        showToast('Could not copy link', 'error');
+    });
+}
+
+function exportCalendarPDF() {
+    showToast('Preparing print view...', 'success');
+    window.print();
 }
 
 // === Initialize Application ===
@@ -774,6 +914,9 @@ function completeSignIn(participant, user) {
     updateStats();
     updateAllAttendeeCountsOnCards();
     renderCalendar();
+
+    // Add admin controls if user is admin
+    addAdminControls();
 }
 
 function handleUserSignedOut() {

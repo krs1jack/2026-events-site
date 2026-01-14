@@ -38,7 +38,15 @@
             <span class="user-avatar" id="userAvatar">?</span>
             <span class="user-name">Welcome, <strong id="userName">Guest</strong></span>
         </div>
-        <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
+        <div class="user-actions">
+            <button class="action-btn print-btn" onclick="printCalendar()" title="Print Calendar">
+                <span>&#128424;</span> Print
+            </button>
+            <button class="action-btn share-btn" onclick="shareCalendar()" title="Share Calendar">
+                <span>&#128279;</span> Share
+            </button>
+            <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
+        </div>
     </div>
 
     <header class="hero">
