@@ -1597,7 +1597,7 @@ document.addEventListener('keydown', function(e) {
 window.openRSVP = openRSVP;
 window.closeRSVP = closeRSVP;
 window.saveRSVP = saveRSVP;
-window.signOut = signOut;
+window.signOut = signOutUser;
 window.openAddEvent = openAddEvent;
 window.closeAddEvent = closeAddEvent;
 window.saveNewEvent = saveNewEvent;
