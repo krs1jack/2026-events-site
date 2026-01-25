@@ -1,4 +1,8 @@
 // === Firebase Configuration ===
+// NOTE: This API key is intentionally public and safe to expose in client-side code.
+// Firebase API keys only identify the app, they do NOT grant access to data.
+// Security is enforced through Firebase Security Rules, not by hiding this key.
+// See SECURITY.md for more information on Firebase security best practices.
 const firebaseConfig = {
     apiKey: "AIzaSyD2RaLiJx2S9VcVrU2FfK4u6dOqlfRctpo",
     authDomain: "eventssite-104e7.firebaseapp.com",
@@ -395,6 +399,8 @@ let eventsData = {
 const members = ['Sam', 'Charisse', 'Dee', 'Kim', 'Jenn', 'Arline', 'Treva', 'Kesha', 'Dana'];
 
 // Admin emails - only these users can delete events
+// NOTE: For production apps, consider using Firebase Custom Claims instead of hardcoded emails
+// See: https://firebase.google.com/docs/auth/admin/custom-claims
 const adminEmails = [
     'krs1jack@gmail.com'  // Add admin emails here
 ];
