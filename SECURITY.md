@@ -23,18 +23,34 @@ To ensure your Firebase application is secure, you **MUST** implement these meas
 - Restrict data access to authenticated users only
 - Implement proper authorization logic for different user roles
 
-Example Firestore Rules:
+Example Firestore Rules (adjust based on your data structure):
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only authenticated users can read/write
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    // Example: Only allow users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Example: Events can be read by all authenticated users, but only admins can write
+    match /events/{eventId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Example: RSVPs - users can read all, but only modify their own
+    match /rsvps/{rsvpId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
 }
 ```
+
+**Note**: This app appears to store data in localStorage (client-side) rather than Firestore. If you migrate to Firestore, implement rules that match your data model and access patterns.
 
 #### 2. ✅ API Key Restrictions (HIGHLY RECOMMENDED)
 Restrict your Firebase API key in Google Cloud Console:
