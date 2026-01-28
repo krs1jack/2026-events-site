@@ -13,6 +13,11 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
+// === Supabase Configuration ===
+const SUPABASE_URL = 'https://vwqpxzjbrhwtbkwsulzs.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3cXB4empicmh3dGJrd3N1bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5ODM4MTgsImV4cCI6MjA1MzU1OTgxOH0.lXVqR3Fy7qiXfPWMdkVGW8pJnJLCZqpLVN-qzVQZdWI';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // === Church Locations ===
 const churchLocations = {
     'jenns-church': {
@@ -34,6 +39,258 @@ const churchLocations = {
 
 // === Travel Details Storage ===
 let travelData = {};
+
+// === Supabase Helper Functions ===
+let currentUserId = null;
+
+// Load user data from Supabase
+async function loadUserDataFromSupabase(userId) {
+    try {
+        // Load RSVPs
+        const { data: rsvps, error: rsvpError } = await supabase
+            .from('user_rsvps')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (rsvpError) throw rsvpError;
+        
+        // Convert array to object format
+        if (rsvps && rsvps.length > 0) {
+            rsvpData = {};
+            rsvps.forEach(rsvp => {
+                try {
+                    rsvpData[rsvp.event_id] = JSON.parse(rsvp.rsvp_data);
+                } catch (e) {
+                    console.error('Error parsing RSVP data:', e);
+                }
+            });
+        }
+        
+        // Load notes
+        const { data: notes, error: notesError } = await supabase
+            .from('user_notes')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (notesError) throw notesError;
+        
+        if (notes && notes.length > 0) {
+            notesData = {};
+            notes.forEach(note => {
+                notesData[note.event_id] = note.note_text;
+            });
+        }
+        
+        // Load travel data
+        const { data: travels, error: travelError } = await supabase
+            .from('user_travel')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (travelError) throw travelError;
+        
+        if (travels && travels.length > 0) {
+            travelData = {};
+            travels.forEach(travel => {
+                try {
+                    travelData[travel.event_id] = JSON.parse(travel.travel_data);
+                } catch (e) {
+                    console.error('Error parsing travel data:', e);
+                }
+            });
+        }
+        
+        // Load custom events
+        const { data: customs, error: customError } = await supabase
+            .from('user_custom_events')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (customError) throw customError;
+        
+        if (customs && customs.length > 0) {
+            customs.forEach(custom => {
+                const eventData = JSON.parse(custom.event_data);
+                customEvents[custom.event_id] = eventData;
+                eventsData[custom.event_id] = eventData;
+            });
+        }
+        
+        // Load church events
+        const { data: churches, error: churchError } = await supabase
+            .from('user_church_events')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (churchError) throw churchError;
+        
+        if (churches && churches.length > 0) {
+            confirmedChurchEvents = [];
+            churches.forEach(church => {
+                const eventData = JSON.parse(church.event_data);
+                confirmedChurchEvents.push(eventData);
+                eventsData[church.event_id] = eventData;
+            });
+        }
+        
+        console.log('User data loaded from Supabase successfully');
+        return true;
+    } catch (error) {
+        console.error('Error loading user data from Supabase:', error);
+        return false;
+    }
+}
+
+// Save RSVP to Supabase
+async function saveRSVPToSupabase(userId, eventId, rsvpObject) {
+    try {
+        const { data, error } = await supabase
+            .from('user_rsvps')
+            .upsert({
+                user_id: userId,
+                event_id: eventId,
+                rsvp_data: JSON.stringify(rsvpObject),
+                timestamp: new Date().toISOString()
+            }, {
+                onConflict: 'user_id,event_id'
+            });
+        
+        if (error) throw error;
+        console.log('RSVP saved to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error saving RSVP to Supabase:', error);
+        return false;
+    }
+}
+
+// Save note to Supabase
+async function saveNoteToSupabase(userId, eventId, noteText) {
+    try {
+        if (noteText && noteText.trim()) {
+            const { data, error } = await supabase
+                .from('user_notes')
+                .upsert({
+                    user_id: userId,
+                    event_id: eventId,
+                    note_text: noteText
+                }, {
+                    onConflict: 'user_id,event_id'
+                });
+            
+            if (error) throw error;
+        } else {
+            // Delete note if empty
+            const { error } = await supabase
+                .from('user_notes')
+                .delete()
+                .eq('user_id', userId)
+                .eq('event_id', eventId);
+            
+            if (error) throw error;
+        }
+        console.log('Note saved to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error saving note to Supabase:', error);
+        return false;
+    }
+}
+
+// Save travel data to Supabase
+async function saveTravelToSupabase(userId, eventId, travelInfo) {
+    try {
+        if (travelInfo && (travelInfo.hotel || travelInfo.flight || travelInfo.transport)) {
+            const { data, error } = await supabase
+                .from('user_travel')
+                .upsert({
+                    user_id: userId,
+                    event_id: eventId,
+                    travel_data: JSON.stringify(travelInfo)
+                }, {
+                    onConflict: 'user_id,event_id'
+                });
+            
+            if (error) throw error;
+        } else {
+            // Delete travel data if not needed
+            const { error } = await supabase
+                .from('user_travel')
+                .delete()
+                .eq('user_id', userId)
+                .eq('event_id', eventId);
+            
+            if (error) throw error;
+        }
+        console.log('Travel data saved to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error saving travel data to Supabase:', error);
+        return false;
+    }
+}
+
+// Save custom event to Supabase
+async function saveCustomEventToSupabase(userId, eventId, eventData) {
+    try {
+        const { data, error } = await supabase
+            .from('user_custom_events')
+            .upsert({
+                user_id: userId,
+                event_id: eventId,
+                event_data: JSON.stringify(eventData)
+            }, {
+                onConflict: 'user_id,event_id'
+            });
+        
+        if (error) throw error;
+        console.log('Custom event saved to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error saving custom event to Supabase:', error);
+        return false;
+    }
+}
+
+// Save church event to Supabase
+async function saveChurchEventToSupabase(userId, eventId, eventData) {
+    try {
+        const { data, error } = await supabase
+            .from('user_church_events')
+            .upsert({
+                user_id: userId,
+                event_id: eventId,
+                event_data: JSON.stringify(eventData)
+            }, {
+                onConflict: 'user_id,event_id'
+            });
+        
+        if (error) throw error;
+        console.log('Church event saved to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error saving church event to Supabase:', error);
+        return false;
+    }
+}
+
+// Delete custom event from Supabase
+async function deleteCustomEventFromSupabase(userId, eventId) {
+    try {
+        const { error } = await supabase
+            .from('user_custom_events')
+            .delete()
+            .eq('user_id', userId)
+            .eq('event_id', eventId);
+        
+        if (error) throw error;
+        console.log('Custom event deleted from Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error deleting custom event from Supabase:', error);
+        return false;
+    }
+}
 
 // === Event Data Store ===
 let eventsData = {
@@ -510,6 +767,11 @@ function addChurchEvent(churchId, sundayDate) {
     eventsData[eventId] = newEvent;
     confirmedChurchEvents[eventId] = newEvent;
     saveConfirmedChurchEvents();
+    
+    // Save to Supabase if user is logged in
+    if (currentUserId) {
+        saveChurchEventToSupabase(currentUserId, eventId, newEvent);
+    }
 
     // Create and add card to DOM
     addChurchEventCard(newEvent);
@@ -657,18 +919,41 @@ function deleteEvent(eventId) {
     if (customEvents[eventId]) {
         delete customEvents[eventId];
         saveCustomEvents();
+        
+        // Delete from Supabase
+        if (currentUserId) {
+            deleteCustomEventFromSupabase(currentUserId, eventId);
+        }
     }
 
     // Remove from confirmed church events if applicable
     if (confirmedChurchEvents[eventId]) {
         delete confirmedChurchEvents[eventId];
         saveConfirmedChurchEvents();
+        
+        // Delete from Supabase (church events table)
+        if (currentUserId) {
+            supabase.from('user_church_events')
+                .delete()
+                .eq('user_id', currentUserId)
+                .eq('event_id', eventId)
+                .then(() => console.log('Church event deleted from Supabase'));
+        }
     }
 
     // Remove RSVPs for this event
     if (rsvpData[eventId]) {
         delete rsvpData[eventId];
         saveDataToStorage();
+        
+        // Delete from Supabase
+        if (currentUserId) {
+            supabase.from('user_rsvps')
+                .delete()
+                .eq('user_id', currentUserId)
+                .eq('event_id', eventId)
+                .then(() => console.log('RSVP deleted from Supabase'));
+        }
     }
 
     closeDeleteModal();
@@ -868,6 +1153,7 @@ function selectParticipant(participant) {
 
 function completeSignIn(participant, user) {
     currentUser = participant;
+    currentUserId = user.uid; // Set the current user ID for Supabase
     localStorage.setItem('2026EventsUser', participant);
 
     // Show user bar
@@ -910,10 +1196,19 @@ function completeSignIn(participant, user) {
         userAvatar.style.background = memberColors[participant] || '#667eea';
     }
 
-    // Initialize the app
-    updateStats();
-    updateAllAttendeeCountsOnCards();
-    renderCalendar();
+    // Load user data from Supabase
+    loadUserDataFromSupabase(user.uid).then(success => {
+        // Initialize the app after data is loaded
+        updateStats();
+        updateAllAttendeeCountsOnCards();
+        renderCalendar();
+        
+        if (success) {
+            console.log('User data loaded from Supabase');
+        } else {
+            console.log('Using local storage data');
+        }
+    });
 
     // Add admin controls if user is admin
     addAdminControls();
@@ -921,9 +1216,15 @@ function completeSignIn(participant, user) {
 
 function handleUserSignedOut() {
     currentUser = null;
+    currentUserId = null; // Clear current user ID
     localStorage.removeItem('2026EventsUser');
     localStorage.removeItem('2026EventsUserEmail');
     localStorage.removeItem('2026EventsUserUID');
+    
+    // Clear data
+    rsvpData = {};
+    notesData = {};
+    travelData = {};
 
     // Show sign-in screen
     document.getElementById('signInScreen').classList.remove('hidden');
@@ -952,6 +1253,23 @@ function isLocalStorageAvailable() {
 }
 
 function loadDataFromStorage() {
+    // Try loading from Supabase first if user is logged in
+    if (currentUserId) {
+        loadUserDataFromSupabase(currentUserId).then(success => {
+            if (success) {
+                updateUI();
+            } else {
+                // Fallback to localStorage
+                loadFromLocalStorage();
+            }
+        });
+    } else {
+        // Load from localStorage as fallback
+        loadFromLocalStorage();
+    }
+}
+
+function loadFromLocalStorage() {
     if (!isLocalStorageAvailable()) {
         console.warn('localStorage not available');
         return;
@@ -980,15 +1298,20 @@ function loadDataFromStorage() {
 }
 
 function saveDataToStorage() {
+    // Save to both localStorage (for backup) and Supabase
     localStorage.setItem('2026EventsRSVP', JSON.stringify(rsvpData));
     localStorage.setItem('2026EventsNotes', JSON.stringify(notesData));
     localStorage.setItem('2026EventsTravel', JSON.stringify(travelData));
+    
+    // Note: Individual saves to Supabase are done in specific functions
 }
 
 function loadCustomEvents() {
+    // Custom events are loaded from Supabase in loadUserDataFromSupabase
+    // This is a fallback for localStorage
     try {
         const saved = localStorage.getItem('2026CustomEvents');
-        if (saved) {
+        if (saved && !currentUserId) {
             customEvents = JSON.parse(saved);
             // Merge custom events into eventsData
             Object.assign(eventsData, customEvents);
@@ -1000,6 +1323,7 @@ function loadCustomEvents() {
 
 function saveCustomEvents() {
     localStorage.setItem('2026CustomEvents', JSON.stringify(customEvents));
+    // Note: Individual saves to Supabase are done when events are created
 }
 
 // === Filter Functions ===
@@ -1170,6 +1494,29 @@ function saveRSVP() {
 
     // Persist to storage
     saveDataToStorage();
+    
+    // Save to Supabase if user is logged in
+    if (currentUserId) {
+        // Save RSVP to Supabase
+        const hasRSVP = Object.keys(eventRSVP).length > 0;
+        if (hasRSVP) {
+            saveRSVPToSupabase(currentUserId, currentEventId, eventRSVP);
+        }
+        
+        // Save notes to Supabase
+        if (notes) {
+            saveNoteToSupabase(currentUserId, currentEventId, notes);
+        } else {
+            saveNoteToSupabase(currentUserId, currentEventId, '');
+        }
+        
+        // Save travel data to Supabase
+        if (travelData[currentEventId]) {
+            saveTravelToSupabase(currentUserId, currentEventId, travelData[currentEventId]);
+        } else {
+            saveTravelToSupabase(currentUserId, currentEventId, null);
+        }
+    }
 
     // Update display
     updateAttendeesDisplay(eventRSVP);
@@ -1392,6 +1739,11 @@ function saveNewEvent() {
 
     // Save to storage
     saveCustomEvents();
+    
+    // Save to Supabase if user is logged in
+    if (currentUserId) {
+        saveCustomEventToSupabase(currentUserId, eventId, newEvent);
+    }
 
     // Add card to DOM
     addEventCardToDOM(eventId, newEvent);
