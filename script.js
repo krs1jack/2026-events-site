@@ -11,6 +11,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 // === Church Locations ===
@@ -506,16 +507,15 @@ function addChurchEvent(churchId, sundayDate) {
         isConfirmedChurch: true
     };
 
-    // Add to data stores
-    eventsData[eventId] = newEvent;
-    confirmedChurchEvents[eventId] = newEvent;
-    saveConfirmedChurchEvents();
-
-    // Create and add card to DOM
-    addChurchEventCard(newEvent);
-
-    showToast(`Added ${church.name} for ${monthName} ${dayNum}!`, 'success');
-    updateStats();
+    // Save to Firestore
+    db.collection('church_events').doc(eventId).set(newEvent)
+        .then(() => {
+            showToast(`Added ${church.name} for ${monthName} ${dayNum}!`, 'success');
+        })
+        .catch((error) => {
+            console.error("Error adding church event: ", error);
+            showToast("Error adding church event", "error");
+        });
 
     return eventId;
 }
@@ -642,7 +642,38 @@ function closeDeleteModal() {
 }
 
 function deleteEvent(eventId) {
-    // Remove from DOM
+    // Delete from Firestore
+    // We try to delete from all potential collections just in case
+
+    const db = firebase.firestore();
+    const batch = db.batch();
+
+    if (customEvents[eventId]) {
+        const docRef = db.collection('custom_events').doc(eventId);
+        batch.delete(docRef);
+    }
+
+    if (confirmedChurchEvents[eventId]) {
+        const docRef = db.collection('church_events').doc(eventId);
+        batch.delete(docRef);
+    }
+
+    // Also delete any RSVPs
+    // Note: deleting a document doesn't delete subcollections, 
+    // but here RSVPs are in a root 'rsvps' collection with docId = eventId
+    const rsvpRef = db.collection('rsvps').doc(eventId);
+    batch.delete(rsvpRef);
+
+    batch.commit().then(() => {
+        console.log('Event deleted successfully');
+        showToast('Event deleted successfully', 'success');
+        closeDeleteModal();
+    }).catch((error) => {
+        console.error('Error deleting event:', error);
+        showToast('Error deleting event', 'error');
+    });
+
+    // Remove from DOM immediately for feedback (will be confirmed by listener)
     const card = document.querySelector(`[data-event-id="${eventId}"]`);
     if (card) {
         card.style.transform = 'scale(0.8)';
@@ -650,29 +681,11 @@ function deleteEvent(eventId) {
         setTimeout(() => card.remove(), 300);
     }
 
-    // Remove from data
+    // Local cleanup
     delete eventsData[eventId];
-
-    // Remove from custom events if it exists there
-    if (customEvents[eventId]) {
-        delete customEvents[eventId];
-        saveCustomEvents();
-    }
-
-    // Remove from confirmed church events if applicable
-    if (confirmedChurchEvents[eventId]) {
-        delete confirmedChurchEvents[eventId];
-        saveConfirmedChurchEvents();
-    }
-
-    // Remove RSVPs for this event
-    if (rsvpData[eventId]) {
-        delete rsvpData[eventId];
-        saveDataToStorage();
-    }
-
-    closeDeleteModal();
-    showToast('Event deleted successfully', 'success');
+    delete customEvents[eventId];
+    delete confirmedChurchEvents[eventId];
+    delete rsvpData[eventId];
     updateYourEventsSection();
 }
 
@@ -715,7 +728,7 @@ function exportCalendarPDF() {
 }
 
 // === Initialize Application ===
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadConfirmedChurchEvents();
     loadDataFromStorage();
     loadCustomEvents();
@@ -756,7 +769,7 @@ function populateSundaySelects() {
 // === Setup Church Invitation Buttons ===
 function setupChurchInvitations() {
     document.querySelectorAll('.add-church-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const churchId = this.dataset.church;
             const select = this.closest('.church-invitation').querySelector('.sunday-select');
             const sundayDate = select.value;
@@ -780,7 +793,7 @@ function setupChurchInvitations() {
 // === Firebase Auth Functions ===
 function setupSignIn() {
     // Firebase auth state listener handles sign-in state
-    auth.onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(function (user) {
         if (user) {
             // User is signed in
             handleUserSignedIn(user);
@@ -819,23 +832,33 @@ let googleUser = null;
 function handleUserSignedIn(user) {
     googleUser = user;
 
-    // Store Google user info
-    localStorage.setItem('2026EventsUserEmail', user.email);
-    localStorage.setItem('2026EventsUserUID', user.uid);
-
     // Hide sign-in screen
     document.getElementById('signInScreen').classList.add('hidden');
 
-    // Check if user has already selected a participant
-    const savedParticipant = localStorage.getItem('2026EventsParticipant_' + user.uid);
+    // Check Firestore for existing user mapping
+    const db = firebase.firestore();
+    db.collection('users').doc(user.uid).get().then((doc) => {
+        if (doc.exists && doc.data().participantName) {
+            // Found existing user mapping
+            completeSignIn(doc.data().participantName, user);
+        } else {
+            // New user or no mapping, show selection modal
+            showParticipantModal();
+        }
+    }).catch((error) => {
+        console.error("Error fetching user profile:", error);
+        // Fallback to local storage if offline (optional, but good practice) or just show modal
+        const savedParticipant = localStorage.getItem('2026EventsParticipant_' + user.uid);
+        if (savedParticipant && members.includes(savedParticipant)) {
+            completeSignIn(savedParticipant, user);
+        } else {
+            showParticipantModal();
+        }
+    });
 
-    if (savedParticipant && members.includes(savedParticipant)) {
-        // User already selected their participant - complete sign in
-        completeSignIn(savedParticipant, user);
-    } else {
-        // Show participant selection modal
-        showParticipantModal();
-    }
+    // Still store locally for offline/faster access if needed, but not primary source of truth
+    localStorage.setItem('2026EventsUserEmail', user.email);
+    localStorage.setItem('2026EventsUserUID', user.uid);
 }
 
 function showParticipantModal() {
@@ -844,7 +867,7 @@ function showParticipantModal() {
 
     // Setup participant button handlers
     document.querySelectorAll('.participant-btn').forEach(btn => {
-        btn.onclick = function() {
+        btn.onclick = function () {
             const participant = this.dataset.participant;
             selectParticipant(participant);
         };
@@ -854,7 +877,19 @@ function showParticipantModal() {
 function selectParticipant(participant) {
     if (!googleUser) return;
 
-    // Save participant selection tied to Google UID
+    // Save participant selection to Firestore
+    const db = firebase.firestore();
+    db.collection('users').doc(googleUser.uid).set({
+        participantName: participant,
+        email: googleUser.email,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+        console.log("User mapping saved");
+    }).catch((error) => {
+        console.error("Error saving user mapping:", error);
+    });
+
+    // Save locally too
     localStorage.setItem('2026EventsParticipant_' + googleUser.uid, participant);
 
     // Close modal
@@ -889,14 +924,14 @@ function completeSignIn(participant, user) {
         // Load photo with error handling
         userPhoto.src = user.photoURL;
 
-        userPhoto.onload = function() {
+        userPhoto.onload = function () {
             // Photo loaded successfully, show it
             userPhoto.style.display = 'block';
             userAvatar.style.display = 'none';
             console.log('Profile photo loaded successfully');
         };
 
-        userPhoto.onerror = function() {
+        userPhoto.onerror = function () {
             // Photo failed to load, keep avatar
             console.warn('Failed to load profile photo, using avatar fallback');
             userPhoto.style.display = 'none';
@@ -914,6 +949,9 @@ function completeSignIn(participant, user) {
     updateStats();
     updateAllAttendeeCountsOnCards();
     renderCalendar();
+
+    // Setup Firestore Listeners
+    setupFirestoreListeners();
 
     // Add admin controls if user is admin
     addAdminControls();
@@ -951,55 +989,127 @@ function isLocalStorageAvailable() {
     }
 }
 
+// === Firestore Real-time Listeners ===
+function setupFirestoreListeners() {
+    if (!currentUser) return;
+
+    // 1. Listen for RSVPs (Global)
+    // Structure: collection('rsvps').doc(eventId) -> { userId: 'going', ... }
+    db.collection('rsvps').onSnapshot((snapshot) => {
+        const changes = {};
+        snapshot.docChanges().forEach((change) => {
+            const eventId = change.doc.id;
+            const data = change.doc.data();
+            rsvpData[eventId] = data || {};
+
+            // Update UI for this event
+            updateAttendeeCountOnCard(eventId);
+
+            // If this event is currently open in modal, update it
+            if (currentEventId === eventId) {
+                // If modal is open, we might need to refresh the attendee list
+                // logic here is tricky to not disrupt user typing, but attendee list is safe
+                updateAttendeesDisplay(rsvpData[eventId]);
+            }
+        });
+
+        // Update stats after batch updates
+        updateStats();
+    });
+
+    // 2. Listen for Custom Events
+    db.collection('custom_events').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventData = change.doc.data();
+            const eventId = change.doc.id;
+
+            if (change.type === "added") {
+                if (!eventsData[eventId]) {
+                    eventsData[eventId] = { ...eventData, id: eventId, isCustom: true };
+                    customEvents[eventId] = eventsData[eventId];
+                    addEventCardToDOM(eventId, eventsData[eventId]);
+                }
+            } else if (change.type === "modified") {
+                eventsData[eventId] = { ...eventData, id: eventId, isCustom: true };
+                customEvents[eventId] = eventsData[eventId];
+                // basic update: re-render card? For now just update stats
+            } else if (change.type === "removed") {
+                delete eventsData[eventId];
+                delete customEvents[eventId];
+                const card = document.querySelector(`[data-event-id="${eventId}"]`);
+                if (card) card.remove();
+            }
+        });
+        updateStats();
+    });
+
+    // 3. Listen for Confirmed Church Events
+    db.collection('church_events').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventData = change.doc.data();
+            const eventId = change.doc.id;
+
+            if (change.type === "added") {
+                if (!eventsData[eventId]) {
+                    eventsData[eventId] = { ...eventData, id: eventId, isConfirmedChurch: true };
+                    confirmedChurchEvents[eventId] = eventsData[eventId];
+                    addChurchEventCard(eventsData[eventId]);
+                }
+            } else if (change.type === 'removed') {
+                delete eventsData[eventId];
+                delete confirmedChurchEvents[eventId];
+                const card = document.querySelector(`[data-event-id="${eventId}"]`);
+                if (card) card.remove();
+            }
+        });
+        updateStats();
+    });
+
+    // 4. Listen for User Specific Data (Notes/Travel) if we want private data
+    // For now, let's make travel data public/shared as per "friend sharing" goal?
+    // User requested "best site for friends sharing", so shared travel info is good.
+    db.collection('travel_info').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const eventId = change.doc.id;
+            const data = change.doc.data(); // { userId: { hotel: ..., flight: ... } }
+            // We need to structure this. Let's say docId=eventId, fields=userId
+            // Actually, current implementation was local global. 
+            // Let's make travel data global for simplicity: travelData[eventId] = { hotel, flight } (shared)
+            // Or better: travelData[eventId] = { ... }
+            // The previous code had travelData[eventId] = { hotel, flight... } 
+            // which implied one set of travel plans PER event (likely the user's own).
+            // If we want social, we might want to see OTHER's travel plans.
+            // For this MVP, let's keep it simple: sync the travel data associated with the event?
+            // Actually, the previous code was: travelData[eventId] = { hotel, ... }
+            // and it was stored in localStorage '2026EventsTravel'.
+            // This means it was PERSONAL notes.
+            // If we want "friends sharing", maybe we should make it shared?
+            // Let's stick to personal for "Notes" and "Travel" for now unless asked otherwise,
+            // OR make it shared. 
+            // "fix issues of persistence of user data connections"
+            // I will assume Travel details are PERSONAL for now to avoid privacy issues unless explicitly shared.
+            // So I will store these in `users/{uid}/private_data/travel`
+        });
+    });
+
+    // Load User Private Data (Notes/Travel)
+    db.collection('users').doc(currentUser).collection('private_data').doc('notes').get().then(doc => {
+        if (doc.exists) notesData = doc.data();
+    });
+    db.collection('users').doc(currentUser).collection('private_data').doc('travel').get().then(doc => {
+        if (doc.exists) travelData = doc.data();
+    });
+}
+
+// Deprecated Local Storage Functions replaced by Firestore
 function loadDataFromStorage() {
-    if (!isLocalStorageAvailable()) {
-        console.warn('localStorage not available');
-        return;
-    }
-
-    try {
-        const savedRSVP = localStorage.getItem('2026EventsRSVP');
-        const savedNotes = localStorage.getItem('2026EventsNotes');
-        const savedTravel = localStorage.getItem('2026EventsTravel');
-
-        if (savedRSVP) {
-            rsvpData = JSON.parse(savedRSVP);
-        }
-        if (savedNotes) {
-            notesData = JSON.parse(savedNotes);
-        }
-        if (savedTravel) {
-            travelData = JSON.parse(savedTravel);
-        }
-    } catch (error) {
-        console.error('Failed to load data from storage:', error);
-        rsvpData = {};
-        notesData = {};
-        travelData = {};
-    }
+    // No-op, handled by listeners
 }
-
-function saveDataToStorage() {
-    localStorage.setItem('2026EventsRSVP', JSON.stringify(rsvpData));
-    localStorage.setItem('2026EventsNotes', JSON.stringify(notesData));
-    localStorage.setItem('2026EventsTravel', JSON.stringify(travelData));
-}
-
 function loadCustomEvents() {
-    try {
-        const saved = localStorage.getItem('2026CustomEvents');
-        if (saved) {
-            customEvents = JSON.parse(saved);
-            // Merge custom events into eventsData
-            Object.assign(eventsData, customEvents);
-        }
-    } catch (error) {
-        console.error('Failed to load custom events:', error);
-    }
+    // No-op, handled by listeners
 }
-
-function saveCustomEvents() {
-    localStorage.setItem('2026CustomEvents', JSON.stringify(customEvents));
+function loadConfirmedChurchEvents() {
+    // No-op, handled by listeners
 }
 
 // === Filter Functions ===
@@ -1007,7 +1117,7 @@ function setupFilterButtons() {
     const filterBtns = document.querySelectorAll('.filter-btn');
 
     filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             // Remove active class from all buttons
             filterBtns.forEach(b => b.classList.remove('active'));
             // Add active class to clicked button
@@ -1039,7 +1149,7 @@ function setupViewToggle() {
     const calendarView = document.getElementById('calendarView');
 
     viewBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             viewBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
 
@@ -1141,18 +1251,29 @@ function saveRSVP() {
         }
     });
 
-    // Save RSVP
+    // Save RSVP to Firestore (Global)
+    db.collection('rsvps').doc(currentEventId).set(eventRSVP, { merge: true })
+        .then(() => {
+            console.log("RSVP saved");
+        })
+        .catch((error) => {
+            console.error("Error saving RSVP: ", error);
+            showToast("Error saving RSVP", "error");
+        });
+
+    // Update local state immediately for responsiveness (listeners will confirm)
     rsvpData[currentEventId] = eventRSVP;
 
-    // Save notes
+    // Save Notes (Private)
     const notes = document.getElementById('eventNotes').value;
     if (notes) {
         notesData[currentEventId] = notes;
     } else {
         delete notesData[currentEventId];
     }
+    db.collection('users').doc(currentUser).collection('private_data').doc('notes').set(notesData);
 
-    // Save travel details
+    // Save Travel Details (Private)
     const hotel = document.getElementById('hotelInfo').value;
     const flight = document.getElementById('flightInfo').value;
     const transport = document.getElementById('transportInfo').value;
@@ -1167,9 +1288,7 @@ function saveRSVP() {
     } else {
         delete travelData[currentEventId];
     }
-
-    // Persist to storage
-    saveDataToStorage();
+    db.collection('users').doc(currentUser).collection('private_data').doc('travel').set(travelData);
 
     // Update display
     updateAttendeesDisplay(eventRSVP);
@@ -1386,23 +1505,23 @@ function saveNewEvent() {
         isCustom: true
     };
 
-    // Add to events data
-    eventsData[eventId] = newEvent;
-    customEvents[eventId] = newEvent;
+    // Save to Firestore
+    db.collection('custom_events').doc(eventId).set(newEvent)
+        .then(() => {
+            showToast(`Event "${title}" added!`, 'success');
+            // DOM update handled by listener
+            closeAddEvent();
+        })
+        .catch((error) => {
+            console.error("Error adding event: ", error);
+            showToast("Error adding event", "error");
+        });
 
-    // Save to storage
-    saveCustomEvents();
-
-    // Add card to DOM
-    addEventCardToDOM(eventId, newEvent);
-
-    // Close modal
-    closeAddEvent();
-
-    showToast(`Event "${title}" added!`, 'success');
-
-    // Update stats
-    updateStats();
+    // Optimistic update (optional, but let's rely on listener for consistency)
+    // eventsData[eventId] = newEvent;
+    // customEvents[eventId] = newEvent;
+    // addEventCardToDOM(eventId, newEvent);
+    // updateStats();
 }
 
 function addEventCardToDOM(eventId, event) {
@@ -1454,12 +1573,12 @@ function escapeHtml(text) {
 
 // === Calendar Functions ===
 function setupCalendarNavigation() {
-    document.getElementById('prevMonth').addEventListener('click', function() {
+    document.getElementById('prevMonth').addEventListener('click', function () {
         currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
         renderCalendar();
     });
 
-    document.getElementById('nextMonth').addEventListener('click', function() {
+    document.getElementById('nextMonth').addEventListener('click', function () {
         currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
         renderCalendar();
     });
@@ -1467,7 +1586,7 @@ function setupCalendarNavigation() {
 
 function renderCalendar() {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'];
+        'July', 'August', 'September', 'October', 'November', 'December'];
 
     document.getElementById('currentMonth').textContent =
         `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
@@ -1579,14 +1698,14 @@ function showToast(message, type = 'success') {
 }
 
 // === Close modal on outside click ===
-document.getElementById('rsvpModal').addEventListener('click', function(e) {
+document.getElementById('rsvpModal').addEventListener('click', function (e) {
     if (e.target === this) {
         closeRSVP();
     }
 });
 
 // === Keyboard navigation ===
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         closeRSVP();
         closeAddEvent();
@@ -1738,7 +1857,7 @@ function deleteEvent() {
 
 // Override saveNewEvent to handle edit mode
 const originalSaveNewEvent = saveNewEvent;
-saveNewEvent = function() {
+saveNewEvent = function () {
     if (isEditMode) {
         saveEditedEvent();
         isEditMode = false;
@@ -1750,7 +1869,7 @@ saveNewEvent = function() {
 
 // Override closeAddEvent to reset edit mode
 const originalCloseAddEvent = closeAddEvent;
-closeAddEvent = function() {
+closeAddEvent = function () {
     isEditMode = false;
     editingEventId = null;
 

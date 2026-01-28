@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Culture, Travel & Fun - Event Sign-Up</title>
+    <title>Trauma 2026 - Healing, Travel & Joy</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Sign-In Screen -->
     <div id="signInScreen" class="sign-in-screen">
         <div class="sign-in-container">
             <div class="sign-in-header">
-                <h1>2026 Culture, Travel & Fun</h1>
-                <p>Sign in with your Google account to join</p>
+                <h1>Trauma 2026</h1>
+                <p>Healing Connections & Shared Adventures</p>
             </div>
             <button class="google-sign-in-btn" onclick="signInWithGoogle()">
                 <svg viewBox="0 0 24 24" width="24" height="24">
@@ -27,7 +28,7 @@
                 </svg>
                 <span>Sign in with Google</span>
             </button>
-            <p class="sign-in-note">Your RSVPs will be saved to your account</p>
+            <p class="sign-in-note">Join our circle of friends</p>
         </div>
     </div>
 
@@ -50,9 +51,10 @@
     </div>
 
     <header class="hero">
+        <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>2026 Culture, Travel & Fun</h1>
-            <p class="tagline">Your Year of Adventures Awaits</p>
+            <h1>Trauma 2026</h1>
+            <p class="tagline">Healing, Travel & Collective Joy</p>
             <div class="members-preview">
                 <span class="member-badge">Sam</span>
                 <span class="member-badge">Charisse</span>

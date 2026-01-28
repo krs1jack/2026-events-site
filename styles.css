@@ -1,46 +1,58 @@
 /* === Base Styles === */
+:root {
+    /* Premium Color Palette */
+    --primary-color: #2D3047;
+    --accent-color: #D4A373; /* Soft Gold/Earth */
+    --accent-secondary: #E07A5F; /* Soft Terra Cotta */
+    
+    /* Category Colors (Pastel/Muted) */
+    --music-color: #9F86C0;
+    --music-bg: #E7DDF2;
+    --sports-color: #5E548E;
+    --sports-bg: #DEDBEE;
+    --family-color: #E29578;
+    --family-bg: #F7E1D7;
+    --festivals-color: #81B29A;
+    --festivals-bg: #E0F2E9;
+    --travel-color: #3D405B;
+    --travel-bg: #DCE0E6;
+    --wellness-color: #8ECAE6;
+    --wellness-bg: #E0F4FC;
+    --church-color: #D4A373;
+    --church-bg: #FAEBD7;
+
+    /* Neutrals */
+    --background: #FDFBF7; /* Warm white */
+    --card-bg: #FFFFFF;
+    --text-main: #2D3047;
+    --text-muted: #8D99AE;
+    --border: #F0F0F0;
+    
+    /* Shadows & Glass */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
+    --shadow-md: 0 10px 30px rgba(0,0,0,0.04);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-:root {
-    /* Category Colors */
-    --music-color: #9333ea;
-    --music-light: #f3e8ff;
-    --sports-color: #2563eb;
-    --sports-light: #dbeafe;
-    --family-color: #ec4899;
-    --family-light: #fce7f3;
-    --festivals-color: #ea580c;
-    --festivals-light: #ffedd5;
-    --travel-color: #16a34a;
-    --travel-light: #dcfce7;
-    --wellness-color: #0891b2;
-    --wellness-light: #cffafe;
-    --church-color: #ca8a04;
-    --church-light: #fef9c3;
-
-    /* General Colors */
-    --primary-color: #1e293b;
-    --secondary-color: #475569;
-    --accent-color: #7c3aed;
-    --background-color: #f8fafc;
-    --card-background: #ffffff;
-    --text-dark: #1e293b;
-    --text-light: #64748b;
-    --border-color: #e2e8f0;
-    --success-color: #22c55e;
-    --warning-color: #f59e0b;
-    --error-color: #ef4444;
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--background);
+    color: var(--text-main);
+    line-height: 1.6;
+    background-image: radial-gradient(circle at 10% 20%, rgba(212, 163, 115, 0.05) 0%, transparent 20%),
+                      radial-gradient(circle at 90% 80%, rgba(129, 178, 154, 0.05) 0%, transparent 20%);
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-dark);
-    line-height: 1.6;
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
 }
 
 .container {
@@ -51,1021 +63,145 @@ body {
 
 /* === Hero Section === */
 .hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    padding: 60px 20px;
+    position: relative;
+    padding: 120px 20px 80px;
     text-align: center;
+    background: linear-gradient(135deg, #2D3047 0%, #4A4E69 100%);
     color: white;
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-md);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .hero h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
+    font-size: 4rem;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: -1px;
 }
 
 .tagline {
-    font-size: 1.3rem;
-    opacity: 0.95;
-    margin-bottom: 25px;
+    font-size: 1.4rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
     font-weight: 300;
+    font-family: 'Outfit', sans-serif;
 }
 
 .members-preview {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
 }
 
 .member-badge {
-    background: rgba(255,255,255,0.25);
-    padding: 8px 18px;
-    border-radius: 25px;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 20px;
+    border-radius: 50px;
     font-size: 0.9rem;
-    font-weight: 500;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: transform 0.3s ease;
 }
 
 .member-badge:hover {
-    background: rgba(255,255,255,0.4);
     transform: translateY(-2px);
+    background: rgba(255,255,255,0.25);
 }
 
-/* === Filter Navigation === */
-.filter-nav {
-    background: white;
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-.filter-nav .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
-
-.filter-btn {
-    padding: 10px 20px;
-    border: 2px solid var(--border-color);
-    background: white;
-    border-radius: 25px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    color: var(--text-dark);
-}
-
-.filter-btn:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-}
-
-.filter-btn.active {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: white;
-}
-
-.filter-btn[data-category="music"].active { background: var(--music-color); border-color: var(--music-color); }
-.filter-btn[data-category="sports"].active { background: var(--sports-color); border-color: var(--sports-color); }
-.filter-btn[data-category="family"].active { background: var(--family-color); border-color: var(--family-color); }
-.filter-btn[data-category="festivals"].active { background: var(--festivals-color); border-color: var(--festivals-color); }
-.filter-btn[data-category="travel"].active { background: var(--travel-color); border-color: var(--travel-color); }
-.filter-btn[data-category="wellness"].active { background: var(--wellness-color); border-color: var(--wellness-color); }
-.filter-btn[data-category="church"].active { background: var(--church-color); border-color: var(--church-color); }
-
-/* === Stats Bar === */
-.stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-    padding: 30px;
-    background: white;
-    margin: 30px 0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-}
-
-.stat {
-    text-align: center;
-}
-
-.stat-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--accent-color);
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* === View Toggle === */
-.view-toggle {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.view-btn {
-    padding: 12px 30px;
-    border: 2px solid var(--border-color);
-    background: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.view-btn:hover {
-    border-color: var(--accent-color);
-}
-
-.view-btn.active {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-
-/* === Category Sections === */
-.category-section {
-    margin-bottom: 50px;
-}
-
-.category-title {
-    font-size: 1.6rem;
-    font-weight: 600;
-    padding: 15px 25px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    display: inline-block;
-}
-
-.category-title.music { background: var(--music-light); color: var(--music-color); }
-.category-title.sports { background: var(--sports-light); color: var(--sports-color); }
-.category-title.family { background: var(--family-light); color: var(--family-color); }
-.category-title.festivals { background: var(--festivals-light); color: var(--festivals-color); }
-.category-title.travel { background: var(--travel-light); color: var(--travel-color); }
-.category-title.wellness { background: var(--wellness-light); color: var(--wellness-color); }
-.category-title.church { background: var(--church-light); color: var(--church-color); }
-
-/* === Events Grid === */
-.events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 25px;
-}
-
-/* === Event Cards === */
-.event-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    display: flex;
-    transition: all 0.3s ease;
-    border-left: 5px solid;
-}
-
-.event-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-}
-
-.event-card.music { border-left-color: var(--music-color); }
-.event-card.sports { border-left-color: var(--sports-color); }
-.event-card.family { border-left-color: var(--family-color); }
-.event-card.festivals { border-left-color: var(--festivals-color); }
-.event-card.travel { border-left-color: var(--travel-color); }
-.event-card.wellness { border-left-color: var(--wellness-color); }
-.event-card.church { border-left-color: var(--church-color); }
-
-.event-date {
-    padding: 20px;
-    text-align: center;
-    min-width: 90px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-}
-
-.event-date.flexible {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-}
-
-.event-date .month {
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-light);
-}
-
-.event-date .day {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    line-height: 1.2;
-}
-
-.event-date .year {
-    font-size: 0.75rem;
-    color: var(--text-light);
-}
-
-.event-details {
-    flex: 1;
-    padding: 20px;
-}
-
-.event-details h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--text-dark);
-}
-
-.event-time, .event-location {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 4px;
-}
-
-.event-location::before {
-    content: "📍 ";
-}
-
-.event-tag {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-top: 10px;
-}
-
-.event-tag.confirmed { background: #dcfce7; color: #16a34a; }
-.event-tag.ticketmaster { background: #dbeafe; color: #2563eb; }
-.event-tag.rivalry { background: #fee2e2; color: #dc2626; }
-.event-tag.multiday { background: #f3e8ff; color: #9333ea; }
-.event-tag.homecoming { background: #fef3c7; color: #ca8a04; }
-.event-tag.tentative { background: #f1f5f9; color: #64748b; }
-.event-tag.pending { background: #ffedd5; color: #ea580c; }
-.event-tag.culture { background: #ffedd5; color: #ea580c; }
-.event-tag.fun { background: #fce7f3; color: #db2777; }
-.event-tag.heritage { background: #fef3c7; color: #ca8a04; }
-.event-tag.free { background: #dcfce7; color: #16a34a; }
-.event-tag.art { background: #f3e8ff; color: #9333ea; }
-.event-tag.music { background: #f3e8ff; color: #9333ea; }
-.event-tag.annual { background: #cffafe; color: #0891b2; }
-.event-tag.conference { background: #dbeafe; color: #2563eb; }
-.event-tag.tropical { background: #cffafe; color: #0891b2; }
-.event-tag.flexible { background: #fef3c7; color: #ca8a04; }
-.event-tag.tech { background: #dbeafe; color: #2563eb; }
-.event-tag.premium { background: #fce7f3; color: #db2777; }
-.event-tag.international { background: #dcfce7; color: #16a34a; }
-.event-tag.nature { background: #cffafe; color: #0891b2; }
-.event-tag.celebration { background: #fce7f3; color: #ec4899; }
-.event-tag.family { background: #fce7f3; color: #ec4899; }
-.event-tag.bonding { background: #fce7f3; color: #db2777; }
-.event-tag.recurring { background: #f3e8ff; color: #9333ea; }
-.event-tag.spiritual { background: #fef3c7; color: #ca8a04; }
-.event-tag.track { background: #dbeafe; color: #2563eb; }
-.event-tag.championship { background: #fef3c7; color: #ca8a04; }
-
-/* Event Link Button */
-.event-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 10px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-}
-
-.event-link-btn:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
-}
-
-.event-link-btn .link-icon {
-    font-size: 0.9rem;
-}
-
-.event-note {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    font-style: italic;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--border-color);
-}
-
-.event-rsvp {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    min-width: 100px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-}
-
-.rsvp-btn {
-    padding: 10px 25px;
-    background: linear-gradient(135deg, var(--accent-color) 0%, #9333ea 100%);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.rsvp-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-}
-
-.attendee-count {
-    font-size: 0.8rem;
-    color: var(--text-light);
-}
-
-.attendee-count .count {
-    font-weight: 600;
-    color: var(--success-color);
-}
-
-/* === Calendar View === */
-.calendar-section {
-    background: white;
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    margin-bottom: 50px;
-}
-
-.calendar-section.hidden {
-    display: none;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.calendar-header h3 {
-    font-size: 1.4rem;
-    color: var(--text-dark);
-}
-
-.cal-nav {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--border-color);
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-}
-
-.cal-nav:hover {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: white;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 2px;
-}
-
-.calendar-day-header {
-    padding: 15px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-light);
-    background: var(--background-color);
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-}
-
-.calendar-day {
-    min-height: 100px;
-    padding: 10px;
-    background: var(--background-color);
-    border-radius: 4px;
-    position: relative;
-}
-
-.calendar-day.other-month {
-    opacity: 0.4;
-}
-
-.calendar-day.today {
-    background: var(--accent-color);
-    color: white;
-}
-
-.calendar-day .day-number {
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
-
-.calendar-event {
-    font-size: 0.7rem;
-    padding: 3px 6px;
-    border-radius: 4px;
-    margin-bottom: 3px;
-    cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.calendar-event.music { background: var(--music-light); color: var(--music-color); }
-.calendar-event.sports { background: var(--sports-light); color: var(--sports-color); }
-.calendar-event.family { background: var(--family-light); color: var(--family-color); }
-.calendar-event.festivals { background: var(--festivals-light); color: var(--festivals-color); }
-.calendar-event.travel { background: var(--travel-light); color: var(--travel-color); }
-.calendar-event.wellness { background: var(--wellness-light); color: var(--wellness-color); }
-.calendar-event.church { background: var(--church-light); color: var(--church-color); }
-
-/* === Modal === */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 20px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 35px;
-    position: relative;
-    animation: modalSlide 0.3s ease;
-}
-
-@keyframes modalSlide {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 2rem;
-    cursor: pointer;
-    color: var(--text-light);
-    transition: color 0.3s ease;
-}
-
-.close-modal:hover {
-    color: var(--error-color);
-}
-
-.modal-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    padding-right: 40px;
-}
-
-.modal-details {
-    color: var(--text-light);
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.rsvp-form h3 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: var(--text-dark);
-}
-
-.member-rsvp-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.member-rsvp {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.member-name {
-    font-weight: 500;
-    min-width: 80px;
-}
-
-.rsvp-select {
-    flex: 1;
-    padding: 8px 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: border-color 0.3s ease;
-}
-
-.rsvp-select:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
-
-.rsvp-select option[value="going"] { color: var(--success-color); }
-.rsvp-select option[value="maybe"] { color: var(--warning-color); }
-.rsvp-select option[value="not-going"] { color: var(--error-color); }
-
-.notes-section {
-    margin-bottom: 25px;
-}
-
-.notes-section label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.notes-section textarea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    resize: vertical;
-    min-height: 80px;
-    transition: border-color 0.3s ease;
-}
-
-.notes-section textarea:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
-
-.save-rsvp-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--success-color) 0%, #16a34a 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.save-rsvp-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-}
-
-.current-attendees {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.current-attendees h4 {
-    font-size: 1rem;
-    margin-bottom: 15px;
-    color: var(--text-dark);
-}
-
-#attendeesList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.attendee-chip {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.attendee-chip.going {
-    background: #dcfce7;
-    color: #16a34a;
-}
-
-.attendee-chip.maybe {
-    background: #fef3c7;
-    color: #ca8a04;
-}
-
-.attendee-chip.not-going {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-/* === Footer === */
-footer {
-    background: var(--primary-color);
-    color: white;
-    padding: 40px 20px;
-    text-align: center;
-}
-
-footer p {
-    margin-bottom: 20px;
-    opacity: 0.9;
-}
-
-.footer-legend {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-}
-
-.legend-item {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.legend-item.music { background: var(--music-color); }
-.legend-item.sports { background: var(--sports-color); }
-.legend-item.family { background: var(--family-color); }
-.legend-item.festivals { background: var(--festivals-color); }
-.legend-item.travel { background: var(--travel-color); }
-.legend-item.wellness { background: var(--wellness-color); }
-.legend-item.church { background: var(--church-color); }
-
-/* === Responsive Design === */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .tagline {
-        font-size: 1rem;
-    }
-
-    .filter-nav .container {
-        gap: 8px;
-    }
-
-    .filter-btn {
-        padding: 8px 14px;
-        font-size: 0.8rem;
-    }
-
-    .stats-bar {
-        gap: 30px;
-        padding: 20px;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-    }
-
-    .events-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .event-card {
-        flex-direction: column;
-    }
-
-    .event-date {
-        flex-direction: row;
-        gap: 10px;
-        padding: 15px;
-    }
-
-    .event-rsvp {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .member-rsvp-list {
-        grid-template-columns: 1fr;
-    }
-
-    .calendar-day {
-        min-height: 60px;
-        padding: 5px;
-    }
-
-    .calendar-day .day-number {
-        font-size: 0.8rem;
-    }
-
-    .calendar-event {
-        font-size: 0.6rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero {
-        padding: 40px 15px;
-    }
-
-    .hero h1 {
-        font-size: 1.6rem;
-    }
-
-    .member-badge {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-
-    .category-title {
-        font-size: 1.2rem;
-        padding: 12px 18px;
-    }
-
-    .modal-content {
-        padding: 25px;
-    }
-}
-
-/* === Animations === */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.event-card {
-    animation: fadeIn 0.5s ease;
-}
-
-.category-section.hidden {
-    display: none;
-}
-
-/* === Toast Notification === */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--primary-color);
-    color: white;
-    padding: 15px 30px;
-    border-radius: 10px;
-    font-weight: 500;
-    box-shadow: 0 6px 30px rgba(0,0,0,0.2);
-    z-index: 2000;
-    animation: toastSlide 0.3s ease;
-}
-
-.toast.success {
-    background: var(--success-color);
-}
-
-.toast.error {
-    background: var(--error-color);
-}
-
-@keyframes toastSlide {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
-
-/* === Sign-In Screen === */
+/* === Auth & User Bar === */
 .sign-in-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    z-index: 10000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    transition: opacity 0.5s ease;
 }
 
 .sign-in-screen.hidden {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .sign-in-container {
     background: white;
-    border-radius: 24px;
     padding: 50px;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.3);
-    animation: signInSlide 0.5s ease;
-}
-
-@keyframes signInSlide {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.sign-in-header {
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
     text-align: center;
-    margin-bottom: 40px;
+    max-width: 400px;
+    width: 90%;
 }
 
 .sign-in-header h1 {
-    font-size: 2rem;
-    color: var(--text-dark);
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 5px;
 }
 
-.sign-in-header p {
-    color: var(--text-light);
-    font-size: 1.1rem;
-}
-
-.sign-in-members {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.sign-in-btn {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 18px 25px;
-    border: 2px solid var(--border-color);
-    background: white;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-}
-
-.sign-in-btn:hover {
-    border-color: var(--accent-color);
-    background: var(--background-color);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
-}
-
-.sign-in-btn .avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.sign-in-btn .name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-/* === Google Sign-In Button === */
 .google-sign-in-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 16px 32px;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 24px;
+    margin: 30px 0;
     background: white;
-    border: 2px solid #e5e7eb;
+    border: 1px solid var(--border);
     border-radius: 50px;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
     font-weight: 500;
-    color: #374151;
+    font-size: 1rem;
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
-    margin: 30px auto;
-    min-width: 280px;
 }
 
 .google-sign-in-btn:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.google-sign-in-btn svg {
-    flex-shrink: 0;
-}
-
-.sign-in-note {
-    text-align: center;
-    color: #6b7280;
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
-
-/* === User Photo === */
-.user-photo {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    display: none; /* Hidden by default, shown when loaded */
-}
-
-/* === User Bar === */
 .user-bar {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    padding: 12px 25px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    padding: 10px 20px;
+    border-radius: 50px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 500;
+    gap: 20px;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--glass-border);
 }
 
 .user-bar.hidden {
@@ -1075,940 +211,431 @@ footer p {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
-    color: white;
+    gap: 10px;
 }
 
-.user-avatar {
+.user-photo, .user-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    object-fit: cover;
+}
+
+.user-avatar {
+    background: var(--primary-color);
     color: white;
-    display: none; /* Hidden by default */
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
     font-weight: 600;
+    display: none; /* toggled via JS */
 }
 
 .user-name {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    color: var(--text-main);
 }
 
-.user-name strong {
-    color: #a78bfa;
+.user-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+    padding: 5px;
+}
+
+.action-btn:hover {
+    color: var(--text-main);
 }
 
 .sign-out-btn {
-    padding: 8px 20px;
-    background: transparent;
-    border: 2px solid rgba(255,255,255,0.3);
+    background: var(--text-muted);
     color: white;
-    border-radius: 8px;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
+    margin-left: 10px;
+    transition: background 0.3s ease;
 }
 
 .sign-out-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.5);
+    background: var(--text-main);
 }
 
-/* Adjust filter nav when user bar is visible */
+/* === Filter Navigation === */
 .filter-nav {
-    top: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    background: rgba(253, 251, 247, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
 }
 
-/* === Responsive Sign-In === */
-@media (max-width: 600px) {
-    .sign-in-container {
-        padding: 30px;
-    }
-
-    .sign-in-header h1 {
-        font-size: 1.5rem;
-    }
-
-    .sign-in-members {
-        grid-template-columns: 1fr;
-    }
-
-    .sign-in-btn {
-        padding: 15px 20px;
-    }
-
-    .sign-in-btn .avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 1.1rem;
-    }
-
-    .user-bar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
-    }
-}
-
-/* === Add Event & Export Buttons === */
-.add-event-btn {
-    padding: 12px 25px;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.add-event-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-}
-
-.export-btn {
-    padding: 12px 25px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.export-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-/* === Add Event Form === */
-.add-event-form {
+.filter-nav .container {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
 }
 
-.form-group label {
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-.form-group input,
-.form-group select {
-    padding: 12px 15px;
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
-
-.save-event-btn {
-    padding: 15px;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.save-event-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-}
-
-/* === Custom Event Tag === */
-.event-tag.custom {
-    background: #e0e7ff;
-    color: #4f46e5;
-}
-
-/* === Sunday Calendar Highlight === */
-.calendar-day.sunday {
-    background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
-}
-
-.calendar-day.sunday .day-number {
-    color: var(--church-color);
-    font-weight: 700;
-}
-
-/* === Responsive View Toggle === */
-@media (max-width: 768px) {
-    .view-toggle {
-        flex-wrap: wrap;
-    }
-
-    .add-event-btn,
-    .export-btn {
-        padding: 10px 15px;
-        font-size: 0.85rem;
-    }
-}
-
-/* === Birthday Styling === */
-.event-card.birthday {
-    border-left-color: #f472b6;
-    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-}
-
-.event-date.birthday-date {
-    background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 100%);
-}
-
-.event-date.birthday-date .month,
-.event-date.birthday-date .day,
-.event-date.birthday-date .year {
-    color: #be185d;
-}
-
-.event-tag.birthday {
-    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-    color: white;
-}
-
-/* === Event Link Styling === */
-.event-link {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.event-link:hover {
-    color: #9333ea;
-    text-decoration: underline;
-}
-
-/* === Calendar Birthday Highlight === */
-.calendar-event.birthday {
-    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-    color: white;
-}
-
-/* === RSVP Actions (Edit/Delete) === */
-.rsvp-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.edit-event-btn {
-    flex: 1;
-    padding: 15px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.edit-event-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.delete-event-btn {
-    padding: 15px 20px;
-    background: transparent;
-    color: #ef4444;
-    border: 2px solid #ef4444;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.delete-event-btn:hover {
-    background: #ef4444;
-    color: white;
-}
-
-@media (max-width: 480px) {
-    .rsvp-actions {
-        flex-direction: column;
-    }
-
-    .save-rsvp-btn,
-    .edit-event-btn,
-    .delete-event-btn {
-        width: 100%;
-    }
-}
-
-/* === Church Selection === */
-.church-selection {
-    margin: 20px 0;
-    padding: 20px;
-    background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
-    border-radius: 12px;
-    border: 2px solid #f59e0b;
-}
-
-.church-selection.hidden {
-    display: none;
-}
-
-.church-selection h4 {
-    margin: 0 0 15px 0;
-    color: #92400e;
-    font-size: 1rem;
-}
-
-.church-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.church-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
+.filter-btn {
+    padding: 10px 22px;
     background: white;
-    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
 }
 
-.church-option:hover {
-    border-color: #f59e0b;
+.filter-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--text-main);
 }
 
-.church-option input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #f59e0b;
+.filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(45, 48, 71, 0.2);
 }
 
-.church-option input[type="radio"]:checked + .church-label {
-    color: #92400e;
-}
-
-.church-label {
+/* === Stats Bar === */
+.stats-bar {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    justify-content: space-around;
+    margin-top: -60px; /* Overlap hero */
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.church-label strong {
-    font-size: 0.95rem;
-    color: var(--text-dark);
+.stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: var(--accent-secondary);
+    display: block;
+    line-height: 1;
+    margin-bottom: 5px;
 }
 
-.church-label small {
+.stat-label {
+    text-transform: uppercase;
     font-size: 0.8rem;
-    color: #6b7280;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
 }
 
-/* === Travel Details Section === */
-.travel-details-section {
-    margin: 20px 0;
-    padding: 20px;
-    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-    border-radius: 12px;
-    border: 2px solid #3b82f6;
+/* === Events Grid === */
+.category-title {
+    font-size: 2rem;
+    margin: 60px 0 30px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
 }
 
-.travel-details-section h4 {
-    margin: 0 0 15px 0;
-    color: #1e40af;
-    font-size: 1rem;
+.category-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 2px;
 }
 
-.travel-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
 }
 
-.travel-field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+/* === Event Card Design === */
+.event-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.4s ease;
+    position: relative;
+    border: 1px solid var(--border);
 }
 
-.travel-field label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #1e40af;
+.event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
 }
 
-.travel-field input {
-    padding: 10px 12px;
-    border: 2px solid #93c5fd;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    transition: border-color 0.3s ease;
-}
-
-.travel-field input:focus {
-    outline: none;
-    border-color: #3b82f6;
-}
-
-.travel-field input::placeholder {
-    color: #9ca3af;
-    font-size: 0.85rem;
-}
-
-/* === Church Invitation Cards === */
-.section-subtitle {
-    color: #6b7280;
-    font-size: 0.95rem;
-    margin: -10px 0 20px 0;
-}
-
-.church-invitation {
-    border: 2px dashed #f59e0b;
-    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-}
-
-.church-invitation .event-date.invitation {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+.event-date {
+    height: 140px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    position: relative;
+    overflow: hidden;
 }
 
-.church-icon {
-    font-size: 2rem;
-}
+.event-card.music .event-date { background-color: var(--music-bg); color: var(--music-color); }
+.event-card.sports .event-date { background-color: var(--sports-bg); color: var(--sports-color); }
+.event-card.family .event-date { background-color: var(--family-bg); color: var(--family-color); }
+.event-card.festivals .event-date { background-color: var(--festivals-bg); color: var(--festivals-color); }
+.event-card.travel .event-date { background-color: var(--travel-bg); color: var(--travel-color); }
+.event-card.wellness .event-date { background-color: var(--wellness-bg); color: var(--wellness-color); }
+.event-card.church .event-date { background-color: var(--church-bg); color: var(--church-color); }
 
-.invite-text {
-    font-size: 0.75rem;
+.event-date .month {
+    font-size: 1rem;
+    letter-spacing: 2px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: white;
+    margin-bottom: 5px;
 }
 
-.event-tag.host {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
+.event-date .day {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    font-weight: 700;
 }
 
-.church-invite-action {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px 0;
-}
-
-.sunday-select {
-    padding: 10px 12px;
-    border: 2px solid #fbbf24;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
+.event-date .year {
     font-size: 0.9rem;
-    background: white;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.event-details {
+    padding: 25px;
+}
+
+.event-details h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    color: var(--text-main);
+}
+
+.event-time, .event-location {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--background);
+    color: var(--text-muted);
+    margin-top: 15px;
+}
+
+.event-rsvp {
+    padding: 20px 25px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rsvp-btn {
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-family: 'Outfit', sans-serif;
 }
 
-.sunday-select:focus {
-    outline: none;
-    border-color: #f59e0b;
+.rsvp-btn:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
-.add-church-btn {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+/* === Modals === */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(45, 48, 71, 0.4); /* Primary dim */
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    color: var(--text-muted);
+}
+
+.rsvp-form h3 {
+    margin: 25px 0 15px;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+}
+
+.rsvp-select, .notes-section textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    background: var(--background);
+}
+
+.save-rsvp-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--accent-secondary);
     color: white;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
+    border-radius: 12px;
+    font-size: 1.1rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    margin-top: 30px;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.add-church-btn:hover {
+.save-rsvp-btn:hover {
+    background: #c96246;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
-/* Confirmed Church Event Cards */
-.confirmed-church {
-    border: 2px solid #22c55e;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-}
-
-.confirmed-church .event-tag.church {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: white;
-}
-
-/* === Your Events Section (Personalized) === */
+/* === Your Events Section === */
 .your-events-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 16px;
-    padding: 25px;
-    margin-bottom: 25px;
-    color: white;
-}
-
-.your-events-section.hidden {
-    display: none;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid var(--border);
 }
 
 .your-events-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
 }
 
 .your-events-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.your-events-count {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-.your-events-count strong {
-    font-size: 1.2rem;
-    background: rgba(255,255,255,0.2);
-    padding: 2px 10px;
-    border-radius: 20px;
+    color: var(--primary-color);
 }
 
 .your-events-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 15px;
 }
 
 .your-event-chip {
+    padding: 10px 20px;
+    background: var(--background);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 50px;
-    padding: 8px 12px 8px 15px;
-    transition: all 0.3s ease;
+    border: 1px solid var(--border);
 }
 
-.your-event-chip:hover {
-    background: rgba(255,255,255,0.25);
-    transform: translateY(-2px);
-}
-
-.your-event-chip .chip-date {
+.chip-date {
     font-weight: 600;
-    font-size: 0.85rem;
-    background: rgba(255,255,255,0.2);
-    padding: 4px 10px;
-    border-radius: 20px;
-}
-
-.your-event-chip .chip-title {
-    font-size: 0.9rem;
-    font-weight: 500;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.your-event-chip .chip-view {
-    background: white;
-    color: #667eea;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.your-event-chip .chip-view:hover {
-    background: #f0f0f0;
-    transform: scale(1.05);
-}
-
-/* Category colors for chips */
-.your-event-chip.music .chip-date { background: var(--music-color); }
-.your-event-chip.sports .chip-date { background: var(--sports-color); }
-.your-event-chip.family .chip-date { background: var(--family-color); }
-.your-event-chip.festivals .chip-date { background: var(--festivals-color); }
-.your-event-chip.travel .chip-date { background: var(--travel-color); }
-.your-event-chip.wellness .chip-date { background: var(--wellness-color); }
-.your-event-chip.church .chip-date { background: var(--church-color); }
-
-.no-events-message {
-    text-align: center;
-    opacity: 0.8;
-    font-size: 0.95rem;
-    margin: 0;
-    padding: 10px 0;
-}
-
-@media (max-width: 768px) {
-    .your-events-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .your-events-list {
-        justify-content: center;
-    }
-
-    .your-event-chip .chip-title {
-        max-width: 120px;
-    }
-}
-
-/* === Participant Selection Modal === */
-.participant-modal .modal-content {
-    max-width: 500px;
-}
-
-.participant-content {
-    text-align: center;
-}
-
-.participant-content h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.8rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.participant-subtitle {
-    color: #6b7280;
-    margin-bottom: 25px;
-}
-
-.participant-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.participant-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 20px 15px;
-    background: white;
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-}
-
-.participant-btn:hover {
-    border-color: var(--accent-color);
-    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
-}
-
-.participant-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    font-weight: 600;
-}
-
-.participant-name {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-@media (max-width: 480px) {
-    .participant-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .participant-btn {
-        padding: 15px 10px;
-    }
-
-    .participant-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-    }
-}
-
-/* === Admin Controls === */
-.admin-delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    opacity: 0.6;
-    z-index: 10;
-}
-
-.admin-delete-btn:hover {
-    background: #ef4444;
-    color: white;
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-.event-card {
-    position: relative;
-}
-
-/* === Delete Confirmation Modal === */
-.delete-confirm-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.delete-confirm-modal.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.delete-confirm-content {
-    background: white;
-    border-radius: 16px;
-    padding: 30px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-}
-
-.delete-confirm-modal.active .delete-confirm-content {
-    transform: scale(1);
-}
-
-.delete-confirm-content h3 {
-    margin: 0 0 15px 0;
-    color: #1e293b;
-    font-size: 1.5rem;
-}
-
-.delete-confirm-content p {
-    color: #64748b;
-    margin-bottom: 10px;
-}
-
-.delete-warning {
-    color: #ef4444 !important;
-    font-weight: 500;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
-.delete-confirm-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 25px;
-}
-
-.cancel-delete-btn {
-    padding: 12px 30px;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: #64748b;
-    border-radius: 8px;
-    cursor: pointer;
+.chip-title {
     font-weight: 500;
-    transition: all 0.2s ease;
+    color: var(--text-main);
 }
 
-.cancel-delete-btn:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-}
-
-.confirm-delete-btn {
-    padding: 12px 30px;
+.chip-view {
+    background: transparent;
     border: none;
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.confirm-delete-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-}
-
-/* === User Actions (Print/Share) === */
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.action-btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
+    color: var(--accent-color);
+    font-weight: 600;
     cursor: pointer;
     font-size: 0.85rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
 }
 
-.print-btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
+/* === Footer === */
+footer {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
 }
 
-.print-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.share-btn {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-}
-
-.share-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-/* === Print Styles === */
-@media print {
-    .user-bar,
-    .sign-in-screen,
-    .filter-nav,
-    .rsvp-btn,
-    .admin-delete-btn,
-    .event-link-btn,
-    .add-event-btn,
-    .church-invite-action,
-    .view-toggle,
-    .calendar-nav,
-    .sign-out-btn,
-    .action-btn {
-        display: none !important;
-    }
-
-    .hero {
-        padding: 20px;
-        background: #667eea !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    .event-card {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        box-shadow: none;
-        border: 1px solid #e2e8f0;
-    }
-
-    .events-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    body {
-        background: white;
-    }
-}
-
-/* Mobile adjustments for user actions */
+/* === Responsive === */
 @media (max-width: 768px) {
-    .user-actions {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .action-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-
-    .action-btn span:first-child {
-        display: none;
-    }
+    .hero h1 { font-size: 2.8rem; }
+    .hero-content { margin-top: 20px; }
+    .stats-bar { flex-direction: column; gap: 30px; align-items: center; padding: 30px; }
+    .stat { text-align: center; }
+    .user-bar { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); width: 90%; justify-content: space-between; background: rgba(255,255,255,0.95); }
+    .filter-nav { overflow-x: auto; padding-left: 20px; padding-right: 20px; justify-content: flex-start; }
+    .filter-nav .container { flex-wrap: nowrap; justify-content: flex-start; }
+    .filter-btn { flex-shrink: 0; }
 }
