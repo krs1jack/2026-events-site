@@ -14,8 +14,10 @@ const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 // === Supabase Configuration ===
-const SUPABASE_URL = 'https://vwqpxzjbrhwtbkwsulzs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3cXB4empicmh3dGJrd3N1bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5ODM4MTgsImV4cCI6MjA1MzU1OTgxOH0.lXVqR3Fy7qiXfPWMdkVGW8pJnJLCZqpLVN-qzVQZdWI';
+// ⚠️ IMPORTANT: Replace these with your own Supabase credentials
+// Get them from: https://supabase.com/dashboard -> Your Project -> Settings -> API
+const SUPABASE_URL = 'YOUR_PROJECT_URL_HERE';  // e.g., 'https://xxxxx.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';  // Your anon/public key
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // === Church Locations ===
@@ -58,11 +60,8 @@ async function loadUserDataFromSupabase(userId) {
         if (rsvps && rsvps.length > 0) {
             rsvpData = {};
             rsvps.forEach(rsvp => {
-                try {
-                    rsvpData[rsvp.event_id] = JSON.parse(rsvp.rsvp_data);
-                } catch (e) {
-                    console.error('Error parsing RSVP data:', e);
-                }
+                // JSONB columns are automatically parsed by Supabase
+                rsvpData[rsvp.event_id] = rsvp.rsvp_data;
             });
         }
         
@@ -92,11 +91,8 @@ async function loadUserDataFromSupabase(userId) {
         if (travels && travels.length > 0) {
             travelData = {};
             travels.forEach(travel => {
-                try {
-                    travelData[travel.event_id] = JSON.parse(travel.travel_data);
-                } catch (e) {
-                    console.error('Error parsing travel data:', e);
-                }
+                // JSONB columns are automatically parsed by Supabase
+                travelData[travel.event_id] = travel.travel_data;
             });
         }
         
@@ -110,7 +106,8 @@ async function loadUserDataFromSupabase(userId) {
         
         if (customs && customs.length > 0) {
             customs.forEach(custom => {
-                const eventData = JSON.parse(custom.event_data);
+                // JSONB columns are automatically parsed by Supabase
+                const eventData = custom.event_data;
                 customEvents[custom.event_id] = eventData;
                 eventsData[custom.event_id] = eventData;
             });
@@ -127,7 +124,8 @@ async function loadUserDataFromSupabase(userId) {
         if (churches && churches.length > 0) {
             confirmedChurchEvents = [];
             churches.forEach(church => {
-                const eventData = JSON.parse(church.event_data);
+                // JSONB columns are automatically parsed by Supabase
+                const eventData = church.event_data;
                 confirmedChurchEvents.push(eventData);
                 eventsData[church.event_id] = eventData;
             });
@@ -149,7 +147,7 @@ async function saveRSVPToSupabase(userId, eventId, rsvpObject) {
             .upsert({
                 user_id: userId,
                 event_id: eventId,
-                rsvp_data: JSON.stringify(rsvpObject),
+                rsvp_data: rsvpObject, // JSONB column handles JSON automatically
                 timestamp: new Date().toISOString()
             }, {
                 onConflict: 'user_id,event_id'
@@ -206,7 +204,7 @@ async function saveTravelToSupabase(userId, eventId, travelInfo) {
                 .upsert({
                     user_id: userId,
                     event_id: eventId,
-                    travel_data: JSON.stringify(travelInfo)
+                    travel_data: travelInfo // JSONB column handles JSON automatically
                 }, {
                     onConflict: 'user_id,event_id'
                 });
@@ -238,7 +236,7 @@ async function saveCustomEventToSupabase(userId, eventId, eventData) {
             .upsert({
                 user_id: userId,
                 event_id: eventId,
-                event_data: JSON.stringify(eventData)
+                event_data: eventData // JSONB column handles JSON automatically
             }, {
                 onConflict: 'user_id,event_id'
             });
@@ -260,7 +258,7 @@ async function saveChurchEventToSupabase(userId, eventId, eventData) {
             .upsert({
                 user_id: userId,
                 event_id: eventId,
-                event_data: JSON.stringify(eventData)
+                event_data: eventData // JSONB column handles JSON automatically
             }, {
                 onConflict: 'user_id,event_id'
             });
@@ -937,7 +935,14 @@ function deleteEvent(eventId) {
                 .delete()
                 .eq('user_id', currentUserId)
                 .eq('event_id', eventId)
-                .then(() => console.log('Church event deleted from Supabase'));
+                .then(({ error }) => {
+                    if (error) {
+                        console.error('Error deleting church event from Supabase:', error);
+                    } else {
+                        console.log('Church event deleted from Supabase');
+                    }
+                })
+                .catch(err => console.error('Failed to delete church event:', err));
         }
     }
 
@@ -952,7 +957,14 @@ function deleteEvent(eventId) {
                 .delete()
                 .eq('user_id', currentUserId)
                 .eq('event_id', eventId)
-                .then(() => console.log('RSVP deleted from Supabase'));
+                .then(({ error }) => {
+                    if (error) {
+                        console.error('Error deleting RSVP from Supabase:', error);
+                    } else {
+                        console.log('RSVP deleted from Supabase');
+                    }
+                })
+                .catch(err => console.error('Failed to delete RSVP:', err));
         }
     }
 

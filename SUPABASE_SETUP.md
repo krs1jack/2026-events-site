@@ -31,17 +31,19 @@ Each user's data is stored separately in Supabase, ensuring privacy and data per
 
 ### 3. Update the Code with Your Credentials
 
+⚠️ **IMPORTANT**: The credentials in the code are examples only. You MUST replace them with your own Supabase credentials.
+
 In `script.js`, find this section around line 16:
 
 ```javascript
 // === Supabase Configuration ===
-const SUPABASE_URL = 'https://vwqpxzjbrhwtbkwsulzs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const SUPABASE_URL = 'YOUR_PROJECT_URL_HERE';  // Replace with your Supabase URL
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';  // Replace with your anon public key
 ```
 
-Replace with your own credentials:
-- Replace `SUPABASE_URL` with your Project URL
-- Replace `SUPABASE_ANON_KEY` with your anon public key
+Replace with your own credentials from step 2:
+- Replace `SUPABASE_URL` with your Project URL from Supabase dashboard
+- Replace `SUPABASE_ANON_KEY` with your anon public key from Supabase dashboard
 
 ### 4. Set Up the Database Schema
 
@@ -55,8 +57,34 @@ Replace with your own credentials:
 This will create:
 - 5 tables for storing user data (RSVPs, notes, travel, custom events, church events)
 - Indexes for performance
-- Row Level Security (RLS) policies to protect user data
+- Row Level Security (RLS) policies
 - Triggers for automatic timestamp updates
+
+**⚠️ IMPORTANT NOTE ABOUT RLS POLICIES:**
+
+The SQL schema includes Row Level Security (RLS) policies that use `auth.uid()`. However, this application uses **Firebase for authentication**, not Supabase Auth. This means the RLS policies as written **will not work** because `auth.uid()` will return NULL.
+
+**You have two options:**
+
+**Option 1: Disable RLS (Simpler, but less secure)**
+
+After running the schema, disable RLS on all tables:
+
+```sql
+ALTER TABLE user_rsvps DISABLE ROW LEVEL SECURITY;
+ALTER TABLE user_notes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE user_travel DISABLE ROW LEVEL SECURITY;
+ALTER TABLE user_custom_events DISABLE ROW LEVEL SECURITY;
+ALTER TABLE user_church_events DISABLE ROW LEVEL SECURITY;
+```
+
+**Note**: This means anyone with your anon key can access all data in these tables. Security is handled by the application code checking `currentUserId`.
+
+**Option 2: Use Supabase Auth with Firebase (More Complex, more secure)**
+
+Set up custom JWT authentication to integrate Firebase auth with Supabase. This is more complex but provides database-level security. See [Supabase Custom Claims documentation](https://supabase.com/docs/guides/auth/custom-claims-and-role-based-access-control-rbac) for details.
+
+For most use cases, **Option 1 (disabling RLS) is recommended** since this is a family events site with trusted users.
 
 ### 5. Configure Authentication (Optional but Recommended)
 

@@ -65,6 +65,16 @@ CREATE INDEX IF NOT EXISTS idx_user_custom_events_user_id ON user_custom_events(
 CREATE INDEX IF NOT EXISTS idx_user_church_events_user_id ON user_church_events(user_id);
 
 -- Enable Row Level Security (RLS)
+-- ⚠️ IMPORTANT: These RLS policies use auth.uid() which requires Supabase Auth.
+-- Since this app uses Firebase Authentication, you have two options:
+--   1. DISABLE RLS (simpler): Run the following after this script:
+--      ALTER TABLE user_rsvps DISABLE ROW LEVEL SECURITY;
+--      ALTER TABLE user_notes DISABLE ROW LEVEL SECURITY;
+--      ALTER TABLE user_travel DISABLE ROW LEVEL SECURITY;
+--      ALTER TABLE user_custom_events DISABLE ROW LEVEL SECURITY;
+--      ALTER TABLE user_church_events DISABLE ROW LEVEL SECURITY;
+--   2. Set up custom JWT auth to integrate Firebase with Supabase (more complex)
+-- For most family sites, Option 1 (disabling RLS) is recommended.
 ALTER TABLE user_rsvps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_travel ENABLE ROW LEVEL SECURITY;
