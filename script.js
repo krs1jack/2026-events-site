@@ -2014,3 +2014,75 @@ function escapeICS(text) {
 }
 
 window.exportToGoogleCalendar = exportToGoogleCalendar;
+
+// === Invite Friends Functions ===
+function openInviteModal() {
+    const modal = document.getElementById('inviteModal');
+    const linkInput = document.getElementById('inviteLink');
+
+    // Set the invite link (use current URL or deployed URL)
+    const siteUrl = window.location.href.split('?')[0]; // Remove any query params
+    linkInput.value = siteUrl;
+
+    modal.classList.add('active');
+}
+
+function closeInviteModal() {
+    document.getElementById('inviteModal').classList.remove('active');
+}
+
+function copyInviteLink() {
+    const linkInput = document.getElementById('inviteLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile
+
+    navigator.clipboard.writeText(linkInput.value).then(() => {
+        showToast('Link copied to clipboard!', 'success');
+    }).catch(() => {
+        // Fallback for older browsers
+        document.execCommand('copy');
+        showToast('Link copied to clipboard!', 'success');
+    });
+}
+
+function shareViaEmail() {
+    const siteUrl = document.getElementById('inviteLink').value;
+    const subject = encodeURIComponent('Join our 2026 Culture, Travel & Fun Calendar!');
+    const body = encodeURIComponent(`Hey! I wanted to invite you to our events calendar for 2026.\n\nClick here to join: ${siteUrl}\n\nLet's plan some amazing adventures together!`);
+
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    showToast('Opening email...', 'success');
+}
+
+function shareViaSMS() {
+    const siteUrl = document.getElementById('inviteLink').value;
+    const message = encodeURIComponent(`Hey! Join our 2026 events calendar: ${siteUrl}`);
+
+    // Try SMS URI (works on mobile)
+    window.open(`sms:?body=${message}`, '_blank');
+    showToast('Opening messages...', 'success');
+}
+
+function shareViaWhatsApp() {
+    const siteUrl = document.getElementById('inviteLink').value;
+    const message = encodeURIComponent(`Hey! I wanted to invite you to our 2026 Culture, Travel & Fun calendar. Click here to join: ${siteUrl}`);
+
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+    showToast('Opening WhatsApp...', 'success');
+}
+
+// Close invite modal on click outside
+document.addEventListener('click', function (e) {
+    const modal = document.getElementById('inviteModal');
+    if (e.target === modal) {
+        closeInviteModal();
+    }
+});
+
+// Expose functions globally
+window.openInviteModal = openInviteModal;
+window.closeInviteModal = closeInviteModal;
+window.copyInviteLink = copyInviteLink;
+window.shareViaEmail = shareViaEmail;
+window.shareViaSMS = shareViaSMS;
+window.shareViaWhatsApp = shareViaWhatsApp;
