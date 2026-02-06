@@ -13,6 +13,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- FullCalendar & Tippy -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css" />
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎉</text></svg>">
 </head>
 
 <body>
@@ -57,6 +66,10 @@
             </button>
             <button class="action-btn share-btn" onclick="shareCalendar()" title="Share Calendar">
                 <span>&#128279;</span> Share
+            </button>
+            <button id="adminBtn" class="action-btn admin-btn hidden" onclick="openAdminDashboard()"
+                title="Admin Dashboard">
+                <span>⚙️</span> Admin
             </button>
             <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
         </div>
@@ -130,6 +143,11 @@
             <button class="view-btn" data-view="calendar">Calendar View</button>
             <button class="add-event-btn" onclick="openAddEvent()">+ Add Event</button>
             <button class="export-btn" onclick="exportToGoogleCalendar()">Export to Google Calendar</button>
+        </section>
+
+        <!-- FullCalendar Container -->
+        <section id="calendarView" class="calendar-section hidden">
+            <div id="calendar"></div>
         </section>
 
         <!-- Events List View -->
@@ -1015,22 +1033,6 @@
         </section>
 
         <!-- Calendar View -->
-        <section id="calendarView" class="calendar-section hidden">
-            <div class="calendar-header">
-                <button class="cal-nav" id="prevMonth">&lt;</button>
-                <h3 id="currentMonth">January 2026</h3>
-                <button class="cal-nav" id="nextMonth">&gt;</button>
-            </div>
-            <div class="calendar-grid">
-                <div class="calendar-day-header">Sun</div>
-                <div class="calendar-day-header">Mon</div>
-                <div class="calendar-day-header">Tue</div>
-                <div class="calendar-day-header">Wed</div>
-                <div class="calendar-day-header">Thu</div>
-                <div class="calendar-day-header">Fri</div>
-                <div class="calendar-day-header">Sat</div>
-            </div>
-            <div class="calendar-days" id="calendarDays"></div>
         </section>
 
     </main>
@@ -1298,7 +1300,42 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Pending Access Modal -->
+    <div id="pendingModal" class="modal">
+        <div class="modal-content pending-content">
+            <div class="pending-icon">⏳</div>
+            <h2>Access Pending</h2>
+            <p>Welcome to MyHealthyCircle!</p>
+            <p>Your account is currently waiting for admin approval.</p>
+            <p class="pending-note">Please contact the administrator to activate your access.</p>
+            <button class="sign-out-btn-pending" onclick="signOutUser()">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content admin-content">
+            <span class="close-modal" onclick="closeAdminModal()">&times;</span>
+            <h2>Admin Dashboard</h2>
+            <p class="modal-details">Manage community access</p>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('pending')">Pending Requests</button>
+                <button class="admin-tab" onclick="switchAdminTab('users')">All Users</button>
+            </div>
+
+            <div id="adminPendingList" class="admin-list-container">
+                <!-- Populated by JS -->
+                <p class="empty-state">No pending requests.</p>
+            </div>
+
+            <div id="adminUsersList" class="admin-list-container hidden">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=9"></script>
 </body>
 
 </html>

@@ -256,7 +256,7 @@ h4 {
     cursor: pointer;
     color: var(--text-muted);
     transition: color 0.3s ease;
-    padding: 5px;
+    padding: 15px;
 }
 
 .action-btn:hover {
@@ -785,64 +785,290 @@ footer {
     display: inline-block;
 }
 
-/* === Responsive === */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.8rem;
+/* === Pending Modal === */
+.pending-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.pending-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+.sign-out-btn-pending {
+    margin-top: 25px;
+    background: var(--text-muted);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
     }
 
-    .hero-content {
-        margin-top: 20px;
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
     }
 
-    .hero-logo {
-        width: 100px;
-        height: 100px;
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
+}
 
-    .site-logo {
-        width: 80px;
-        height: 80px;
-    }
+/* === Admin Dashboard === */
+.admin-content {
+    max-width: 700px;
+}
 
-    .stats-bar {
-        flex-direction: column;
-        gap: 30px;
-        align-items: center;
-        padding: 30px;
-    }
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
 
-    .stat {
-        text-align: center;
-    }
+.admin-tab {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
 
-    .user-bar {
-        top: auto;
-        bottom: 20px;
-        right: 50%;
-        transform: translateX(50%);
-        width: 90%;
-        justify-content: space-between;
-        background: rgba(255, 255, 255, 0.95);
-    }
+.admin-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
 
-    .filter-nav {
-        overflow-x: auto;
-        padding-left: 20px;
-        padding-right: 20px;
-        justify-content: flex-start;
-    }
+.admin-list-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
 
-    .filter-nav .container {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-    }
+.user-request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: #f9fafb;
+}
 
-    .filter-btn {
-        flex-shrink: 0;
-    }
+.user-request-info h4 {
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
 
-    .share-buttons {
-        flex-direction: column;
-    }
+.user-request-email {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.approve-btn {
+    background: var(--accent-color);
+    /* Greenish or Gold */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.approve-btn:hover {
+    background: #b88655;
+}
+
+/* === FullCalendar Overrides (Glass/Premium Theme) === */
+#calendar {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 40px;
+}
+
+.fc-header-toolbar {
+    margin-bottom: 30px !important;
+}
+
+.fc-toolbar-title {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 2rem !important;
+    color: var(--primary-color);
+}
+
+.fc-button {
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-muted) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 8px 16px !important;
+    transition: all 0.3s ease !important;
+}
+
+.fc-button:hover,
+.fc-button-active {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+
+.fc-col-header-cell {
+    background: none !important;
+    border: none !important;
+    padding: 15px 0 !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.fc-col-header-cell-cushion {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.fc-daygrid-day {
+    border: 1px solid var(--border) !important;
+    transition: background 0.2s;
+}
+
+.fc-daygrid-day:hover {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.fc-daygrid-day-number {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 8px 12px !important;
+}
+
+.fc-day-today {
+    background: rgba(212, 163, 115, 0.05) !important;
+    /* light accent bg */
+}
+
+/* Event Pills */
+.fc-event {
+    cursor: pointer;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 3px 6px !important;
+    margin-bottom: 2px !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.fc-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fc-event-title {
+    font-weight: 500;
+}
+
+.fc-event-time {
+    font-weight: 600;
+    margin-right: 4px;
+    opacity: 0.8;
+}
+
+/* List View */
+.fc-list-event:hover td {
+    background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Remove ugly borders */
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: var(--border) !important;
+}
+
+.fc-scrollgrid {
+    border: none !important;
+}
+
+/* Additional Styling for logo and general polish */
+.site-logo {
+    box-shadow: none;
+    /* Cleaner look for the new logo if it's transparent or cutout */
+    border: none;
+    background: white;
+    /* Ensure white background if transparent */
+    padding: 5px;
+}
+
+}
+
+.site-logo {
+    width: 80px;
+    height: 80px;
+}
+
+.stats-bar {
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    padding: 30px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.user-bar {
+    top: auto;
+    bottom: 20px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 90%;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.filter-nav {
+    overflow-x: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    justify-content: flex-start;
+}
+
+.filter-nav .container {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+
+.filter-btn {
+    flex-shrink: 0;
+}
+
+.share-buttons {
+    flex-direction: column;
+}
 }

@@ -14,6 +14,23 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
+// === Google Sign-In Function (called by button in HTML) ===
+function signInWithGoogle() {
+    console.log("Sign-in button clicked, initiating Google Sign-In...");
+    auth.signInWithPopup(googleProvider)
+        .then((result) => {
+            console.log("Google Sign-In successful:", result.user.email);
+            // onAuthStateChanged will handle the rest
+        })
+        .catch((error) => {
+            console.error("Google Sign-In error:", error);
+            alert("Sign-in failed: " + error.message);
+        });
+}
+
+// Make signInWithGoogle globally accessible
+window.signInWithGoogle = signInWithGoogle;
+
 // === Church Locations ===
 const churchLocations = {
     'jenns-church': {
@@ -397,14 +414,9 @@ const members = ['Sam', 'Charisse', 'Dee', 'Kim', 'Jenn', 'Arline', 'Treva', 'Ke
 
 // Admin emails - only these users can delete events
 const adminEmails = [
-    'krs1jack@gmail.com'  // Add admin emails here
+    'kimsingjack@gmail.com',
+    'myhealthycircle@gmail.com'
 ];
-
-// Check if current user is admin
-function isAdmin() {
-    const userEmail = localStorage.getItem('2026EventsUserEmail');
-    return userEmail && adminEmails.includes(userEmail.toLowerCase());
-}
 
 // Member colors for avatars
 const memberColors = {
@@ -804,177 +816,410 @@ function setupSignIn() {
     });
 }
 
-function signInWithGoogle() {
-    auth.signInWithPopup(googleProvider)
-        .then((result) => {
-            // Sign-in handled by onAuthStateChanged
-        })
-        .catch((error) => {
-            console.error('Sign-in error:', error);
-            showToast('Sign-in failed: ' + error.message, 'error');
-        });
-}
-
+// Sign out user
 function signOutUser() {
-    auth.signOut()
-        .then(() => {
-            // Sign-out handled by onAuthStateChanged
-        })
-        .catch((error) => {
-            console.error('Sign-out error:', error);
-            showToast('Sign-out failed', 'error');
-        });
-}
-
-// Store Google user info temporarily
-let googleUser = null;
-
-function handleUserSignedIn(user) {
-    googleUser = user;
-
-    // Hide sign-in screen
-    document.getElementById('signInScreen').classList.add('hidden');
-
-    // Check Firestore for existing user mapping
-    const db = firebase.firestore();
-    db.collection('users').doc(user.uid).get().then((doc) => {
-        if (doc.exists && doc.data().participantName) {
-            // Found existing user mapping
-            completeSignIn(doc.data().participantName, user);
-        } else {
-            // New user or no mapping, show selection modal
-            showParticipantModal();
-        }
+    auth.signOut().then(() => {
+        console.log('User signed out successfully');
+        showToast('Signed out successfully!', 'success');
     }).catch((error) => {
-        console.error("Error fetching user profile:", error);
-        // Fallback to local storage if offline (optional, but good practice) or just show modal
-        const savedParticipant = localStorage.getItem('2026EventsParticipant_' + user.uid);
-        if (savedParticipant && members.includes(savedParticipant)) {
-            completeSignIn(savedParticipant, user);
-        } else {
-            showParticipantModal();
-        }
-    });
-
-    // Still store locally for offline/faster access if needed, but not primary source of truth
-    localStorage.setItem('2026EventsUserEmail', user.email);
-    localStorage.setItem('2026EventsUserUID', user.uid);
-}
-
-function showParticipantModal() {
-    const modal = document.getElementById('participantModal');
-    modal.classList.add('active');
-
-    // Setup participant button handlers
-    document.querySelectorAll('.participant-btn').forEach(btn => {
-        btn.onclick = function () {
-            const participant = this.dataset.participant;
-            selectParticipant(participant);
-        };
+        console.error('Sign out error:', error);
+        showToast('Error signing out', 'error');
     });
 }
 
-function selectParticipant(participant) {
-    if (!googleUser) return;
-
-    // Save participant selection to Firestore
-    const db = firebase.firestore();
-    db.collection('users').doc(googleUser.uid).set({
-        participantName: participant,
-        email: googleUser.email,
-        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => {
-        console.log("User mapping saved");
-    }).catch((error) => {
-        console.error("Error saving user mapping:", error);
-    });
-
-    // Save locally too
-    localStorage.setItem('2026EventsParticipant_' + googleUser.uid, participant);
-
-    // Close modal
-    document.getElementById('participantModal').classList.remove('active');
-
-    // Complete sign in
-    completeSignIn(participant, googleUser);
-
-    showToast(`Welcome, ${participant}! Your RSVPs will be tracked.`, 'success');
-}
-
-function completeSignIn(participant, user) {
-    currentUser = participant;
-    localStorage.setItem('2026EventsUser', participant);
-
-    // Show user bar
-    const userBar = document.getElementById('userBar');
-    userBar.classList.remove('hidden');
-    document.getElementById('userName').textContent = participant;
-
-    // Handle profile photo
-    const userPhoto = document.getElementById('userPhoto');
-    const userAvatar = document.getElementById('userAvatar');
-
-    if (user.photoURL) {
-        // Set avatar as fallback initially
-        userAvatar.textContent = participant.charAt(0);
-        userAvatar.style.background = memberColors[participant] || '#667eea';
-        userAvatar.style.display = 'flex';
-        userPhoto.style.display = 'none';
-
-        // Load photo with error handling
-        userPhoto.src = user.photoURL;
-
-        userPhoto.onload = function () {
-            // Photo loaded successfully, show it
-            userPhoto.style.display = 'block';
-            userAvatar.style.display = 'none';
-            console.log('Profile photo loaded successfully');
-        };
-
-        userPhoto.onerror = function () {
-            // Photo failed to load, keep avatar
-            console.warn('Failed to load profile photo, using avatar fallback');
-            userPhoto.style.display = 'none';
-            userAvatar.style.display = 'flex';
-        };
-    } else {
-        // No photo URL, show avatar
-        userPhoto.style.display = 'none';
-        userAvatar.style.display = 'flex';
-        userAvatar.textContent = participant.charAt(0);
-        userAvatar.style.background = memberColors[participant] || '#667eea';
-    }
-
-    // Initialize the app
-    updateStats();
-    updateAllAttendeeCountsOnCards();
-    renderCalendar();
-
-    // Setup Firestore Listeners
-    setupFirestoreListeners();
-
-    // Add admin controls if user is admin
-    addAdminControls();
-}
-
+// Handle user signed out state
 function handleUserSignedOut() {
     currentUser = null;
+    currentUserObj = null;
+    googleUser = null;
+
+    // Clear local storage
     localStorage.removeItem('2026EventsUser');
     localStorage.removeItem('2026EventsUserEmail');
     localStorage.removeItem('2026EventsUserUID');
 
-    // Show sign-in screen
+    // Show sign-in screen, hide user bar
     document.getElementById('signInScreen').classList.remove('hidden');
-
-    // Hide user bar
     document.getElementById('userBar').classList.add('hidden');
 
-    showToast('Signed out successfully', 'success');
+    // Hide pending modal if shown
+    const pendingModal = document.getElementById('pendingModal');
+    if (pendingModal) pendingModal.classList.remove('active');
+
+    // Hide admin modal if shown  
+    const adminModal = document.getElementById('adminModal');
+    if (adminModal) adminModal.classList.remove('active');
+}
+
+// Make signOutUser globally accessible
+window.signOutUser = signOutUser;
+
+
+// === User Approval & Admin Logic ===
+
+// Check if current user is admin
+function isAdmin(emailArg) {
+    // Use provided email OR fetch from storage
+    let email = emailArg;
+    if (!email) {
+        email = localStorage.getItem('2026EventsUserEmail');
+    }
+    // You can also fetch this from a secure 'roles' collection in a real app
+    // For now, email list + firestore verification is good
+    return email && adminEmails.includes(email.toLowerCase().trim());
+}
+
+// Global user object
+let currentUserObj = null;
+
+function handleUserSignedIn(user) {
+    googleUser = user;
+    currentUserObj = user;
+
+    // Store email for admin check
+    localStorage.setItem('2026EventsUserEmail', user.email);
+    localStorage.setItem('2026EventsUserUID', user.uid);
+
+    // Hide sign-in screen initially
+    document.getElementById('signInScreen').classList.add('hidden');
+
+    // Check Firestore for user status
+    const db = firebase.firestore();
+    const userRef = db.collection('users').doc(user.uid);
+
+    userRef.get().then((doc) => {
+        const isUserAdmin = isAdmin(user.email); // Check with direct email
+
+        console.log("Login check - Email:", user.email, "IsAdmin:", isUserAdmin);
+
+        if (!doc.exists) {
+            // First time user! 
+            // If admin, auto-approve immediately
+            const initialStatus = isUserAdmin ? 'approved' : 'pending';
+            createUserRecord(user, initialStatus);
+        } else {
+            const userData = doc.data();
+            console.log("User data from Firestore:", userData);
+
+            // SELF-HEALING: If user is admin but marked as pending, FIX IT
+            if (isUserAdmin && userData.status !== 'approved') {
+                userRef.update({ status: 'approved' })
+                    .then(() => console.log("Admin status self-healed to approved"))
+                    .catch((err) => console.warn("Self-heal update failed (non-blocking):", err));
+                userData.status = 'approved'; // Update local variable regardless
+            }
+
+            // Check Access Status - ADMINS ALWAYS GET THROUGH
+            if (isUserAdmin) {
+                // ADMIN BYPASS - Always grant access
+                console.log("Admin bypass activated for:", user.email);
+                if (userData.participantName) {
+                    completeSignIn(userData.participantName, user);
+                } else {
+                    showParticipantModal();
+                }
+            } else if (userData.status === 'approved') {
+                // Regular approved user
+                if (userData.participantName) {
+                    completeSignIn(userData.participantName, user);
+                } else {
+                    showParticipantModal();
+                }
+            } else {
+                // ACCESS PENDING or DENIED
+                showPendingScreen();
+            }
+        }
+    }).catch((error) => {
+        console.error("Error fetching user data:", error);
+
+        // FAILSAFE: If Firestore fails but user is admin, still let them in
+        const isUserAdmin = isAdmin(user.email);
+        if (isUserAdmin) {
+            console.log("Firestore error but admin detected - granting access");
+            showParticipantModal();
+        } else {
+            alert("Login error: " + error.message);
+        }
+    });
+}
+
+function createUserRecord(user, status) {
+    const db = firebase.firestore();
+    db.collection('users').doc(user.uid).set({
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        status: status, // 'pending', 'approved', 'banned'
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        if (status === 'pending') {
+            showPendingScreen();
+        } else {
+            showParticipantModal();
+        }
+    });
+
+    // Notify admin? (Optional - relies on admin checking dashboard)
+}
+
+function showPendingScreen() {
+    // Show the pending modal
+    document.getElementById('pendingModal').classList.add('active');
+    // Hide main content or user bar to prevent access
+    document.getElementById('userBar').classList.add('hidden');
+}
+
+// === Participant Modal Functions ===
+function showParticipantModal() {
+    document.getElementById('participantModal').classList.add('active');
+    setupParticipantButtons();
+}
+
+function hideParticipantModal() {
+    document.getElementById('participantModal').classList.remove('active');
+}
+
+function setupParticipantButtons() {
+    const buttons = document.querySelectorAll('.participant-btn');
+    buttons.forEach(btn => {
+        btn.onclick = function () {
+            const participantName = this.getAttribute('data-participant');
+            selectParticipant(participantName);
+        };
+    });
+}
+
+function selectParticipant(name) {
+    if (!currentUserObj) {
+        console.error("No current user object");
+        return;
+    }
+
+    // Save to Firestore
+    db.collection('users').doc(currentUserObj.uid).update({
+        participantName: name
+    }).then(() => {
+        console.log("Participant name saved:", name);
+        hideParticipantModal();
+        completeSignIn(name, currentUserObj);
+    }).catch(err => {
+        console.error("Error saving participant name:", err);
+        // Still complete sign in locally
+        hideParticipantModal();
+        completeSignIn(name, currentUserObj);
+    });
+}
+
+// === Admin Dashboard Functions ===
+function openAdminDashboard() {
+    if (!isAdmin()) return;
+    document.getElementById('adminModal').classList.add('active');
+    loadPendingRequests();
+}
+
+function closeAdminModal() {
+    document.getElementById('adminModal').classList.remove('active');
+}
+
+// Add admin button to UI if admin
+function addAdminButton() {
+    // Use currentUserObj.email directly to avoid localStorage timing issues
+    const email = currentUserObj ? currentUserObj.email : null;
+    console.log("addAdminButton called - email:", email, "isAdmin:", isAdmin(email));
+
+    const adminBtn = document.getElementById('adminBtn');
+    if (!adminBtn) {
+        console.warn("Admin button element not found in DOM");
+        return;
+    }
+
+    if (isAdmin(email)) {
+        console.log("Showing Admin button for:", email);
+        adminBtn.classList.remove('hidden');
+    } else {
+        adminBtn.classList.add('hidden');
+    }
+}
+
+function loadPendingRequests() {
+    const container = document.getElementById('adminPendingList');
+    container.innerHTML = '<p>Loading...</p>';
+
+    db.collection('users').where('status', '==', 'pending').get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-state">No pending requests.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const user = doc.data();
+                container.appendChild(createAdminUserCard(doc.id, user));
+            });
+        });
+}
+
+function createAdminUserCard(uid, user) {
+    const div = document.createElement('div');
+    div.className = 'user-request-card';
+    div.innerHTML = `
+        <div class="user-request-info">
+            <h4>${user.displayName || 'Unnamed User'}</h4>
+            <span class="user-request-email">${user.email}</span>
+        </div>
+        <button class="approve-btn" onclick="approveUser('${uid}', '${escapeHtml(user.displayName)}')">Approve</button>
+    `;
+    return div;
+}
+
+function approveUser(uid, name) {
+    if (!confirm(`Approve access for ${name}?`)) return;
+
+    db.collection('users').doc(uid).update({
+        status: 'approved',
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        showToast(`${name} approved!`, 'success');
+        loadPendingRequests(); // refresh list
+    }).catch(err => {
+        showToast('Error approving user', 'error');
+        console.error(err);
+    });
+}
+
+function switchAdminTab(tab) {
+    // Simple tab switching logic for future expansion
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    // Set active style...
+    // For now we primarily focus on pending
+    if (tab === 'pending') loadPendingRequests();
+    // if tab === users loadAllUsers()...
+}
+
+// === FullCalendar Implementation ===
+let calendar; // global instance
+
+function renderCalendar() {
+    const calendarEl = document.getElementById('calendar');
+
+    // Prepare events
+    const allEvents = Object.values(eventsData).map(event => {
+        // Map category to color variables (computed or hardcoded map)
+        let bgColor = '#667eea'; // default
+        let textColor = '#fff';
+
+        switch (event.category) {
+            case 'music': bgColor = '#9F86C0'; break;
+            case 'sports': bgColor = '#5E548E'; break;
+            case 'family': bgColor = '#E29578'; break;
+            case 'festivals': bgColor = '#81B29A'; break;
+            case 'travel': bgColor = '#3D405B'; break;
+            case 'wellness': bgColor = '#8ECAE6'; textColor = '#2D3047'; break;
+            case 'church': bgColor = '#D4A373'; break;
+        }
+
+        return {
+            id: event.id,
+            title: event.title,
+            start: event.date ? event.date : new Date(), // fallback
+            allDay: true, // simplified for now
+            backgroundColor: bgColor,
+            borderColor: bgColor,
+            textColor: textColor,
+            extendedProps: {
+                location: event.location,
+                time: event.time,
+                description: event.description || ''
+            }
+        };
+    });
+
+    if (calendar) {
+        calendar.destroy(); // destroy old instance if re-rendering
+    }
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,dayGridWeek,listMonth'
+        },
+        initialDate: '2026-01-01', // Start in 2026 as per site theme
+        events: allEvents,
+
+        // Interaction
+        eventClick: function (info) {
+            openRSVP(info.event.id);
+        },
+
+        // Tooltips
+        eventDidMount: function (info) {
+            tippy(info.el, {
+                content: `
+                    <div style="text-align: left">
+                        <strong>${info.event.title}</strong><br>
+                        <span style="opacity:0.8">📍 ${info.event.extendedProps.location}</span><br>
+                        <span style="opacity:0.8">⏰ ${info.event.extendedProps.time}</span>
+                    </div>
+                `,
+                allowHTML: true,
+                theme: 'light',
+                animation: 'scale'
+            });
+        }
+    });
+
+    calendar.render();
+
+    // Fix layout after render (sometimes needed if hidden initially)
+    setTimeout(() => {
+        calendar.updateSize();
+    }, 200);
+}
+
+function setupCalendarNavigation() {
+    // No-op: FullCalendar handles its own navigation
+}
+
+// === Complete Sign In Function ===
+function completeSignIn(participant, user) {
+    currentUser = participant;
+    localStorage.setItem('2026EventsUser', participant);
+
+    const userBar = document.getElementById('userBar');
+    userBar.classList.remove('hidden');
+    document.getElementById('userName').textContent = participant;
+
+    // Avatar logic
+    const userPhoto = document.getElementById('userPhoto');
+    const userAvatar = document.getElementById('userAvatar');
+    if (user.photoURL) {
+        userPhoto.src = user.photoURL;
+        userPhoto.style.display = 'block';
+        userAvatar.style.display = 'none';
+    } else {
+        userAvatar.textContent = participant.charAt(0);
+        userAvatar.style.display = 'flex';
+        userPhoto.style.display = 'none';
+        userAvatar.style.background = memberColors[participant] || '#667eea';
+    }
+
+    updateStats();
+    updateAllAttendeeCountsOnCards();
+    renderCalendar();
+    setupFirestoreListeners();
+    addAdminControls();
+
+    // Add Admin Dashboard Button for admin users
+    addAdminButton();
 }
 
 function checkUserSession() {
-    // Firebase handles session persistence automatically
-    // onAuthStateChanged will fire when auth state is determined
+    // Auth listener handles flow
 }
 
 // === Local Storage Functions ===
@@ -1160,7 +1405,13 @@ function setupViewToggle() {
             } else {
                 listView.classList.add('hidden');
                 calendarView.classList.remove('hidden');
-                renderCalendar();
+                // Ensure calendar renders correctly when becoming visible
+                if (calendar) {
+                    calendar.render();
+                    calendar.updateSize();
+                } else {
+                    renderCalendar();
+                }
             }
         });
     });
@@ -1197,6 +1448,24 @@ function openRSVP(eventId) {
         detailsHTML = `🎂 Birthday Celebration!`;
     }
     document.getElementById('modalEventDetails').innerHTML = detailsHTML;
+
+    // Generate QR Code
+    const qrContainer = document.getElementById('qrCodeContainer');
+    qrContainer.innerHTML = ''; // Clear previous
+
+    // Check if QRCode library is loaded
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+            text: window.location.href,
+            width: 128,
+            height: 128,
+            colorDark: "#2D3047",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } else {
+        qrContainer.innerHTML = '<p style="font-size:0.8rem">QR Code unavailable</p>';
+    }
 
     // Load existing RSVP data
     const eventRSVP = rsvpData[eventId] || {};
@@ -1584,7 +1853,8 @@ function setupCalendarNavigation() {
     });
 }
 
-function renderCalendar() {
+// OLD CALENDAR FUNCTION - DISABLED (FullCalendar now handles calendar rendering)
+function renderOldCalendar_DISABLED() {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -2086,3 +2356,42 @@ window.copyInviteLink = copyInviteLink;
 window.shareViaEmail = shareViaEmail;
 window.shareViaSMS = shareViaSMS;
 window.shareViaWhatsApp = shareViaWhatsApp;
+
+// === View Toggle Functionality ===
+function setupViewToggle() {
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const listView = document.getElementById('listView');
+    const calendarView = document.getElementById('calendarView');
+
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const view = this.dataset.view;
+
+            // Update button states
+            viewBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // Toggle views
+            if (view === 'calendar') {
+                listView.classList.add('hidden');
+                calendarView.classList.remove('hidden');
+                // Render calendar when switching to calendar view
+                if (typeof renderCalendar === 'function') {
+                    renderCalendar();
+                    // Update size after showing
+                    setTimeout(() => {
+                        if (calendar) calendar.updateSize();
+                    }, 100);
+                }
+            } else {
+                listView.classList.remove('hidden');
+                calendarView.classList.add('hidden');
+            }
+        });
+    });
+}
+
+// Initialize view toggle on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function () {
+    setupViewToggle();
+});

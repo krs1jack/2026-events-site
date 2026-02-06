@@ -2,6 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email in ['kimsingjack@gmail.com', 'myhealthycircle@gmail.com'];
+    }
+    
     // RSVPs - anyone authenticated can read, only write to their own data
     match /rsvps/{eventId} {
       allow read: if request.auth != null;
@@ -20,10 +26,10 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
     
-    // User profiles - users can read all, but only write their own
+    // User profiles - users can read all, write their own OR admin can write any
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
       
       // Private user data (notes, travel info)
       match /private_data/{document=**} {
