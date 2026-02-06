@@ -1091,12 +1091,178 @@ function approveUser(uid, name) {
 }
 
 function switchAdminTab(tab) {
-    // Simple tab switching logic for future expansion
+    // Update tab button states
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    // Set active style...
-    // For now we primarily focus on pending
-    if (tab === 'pending') loadPendingRequests();
-    // if tab === users loadAllUsers()...
+    document.querySelector(`.admin-tab[data-tab="${tab}"]`)?.classList.add('active');
+
+    // Hide all containers
+    document.getElementById('adminPendingList').classList.add('hidden');
+    document.getElementById('adminUsersList').classList.add('hidden');
+    document.getElementById('adminEventsList')?.classList.add('hidden');
+
+    // Show selected container and load data
+    if (tab === 'pending') {
+        document.getElementById('adminPendingList').classList.remove('hidden');
+        loadPendingRequests();
+    } else if (tab === 'users') {
+        document.getElementById('adminUsersList').classList.remove('hidden');
+        loadAllUsers();
+    } else if (tab === 'events') {
+        document.getElementById('adminEventsList')?.classList.remove('hidden');
+        loadPendingEvents();
+    }
+}
+
+function loadAllUsers() {
+    const container = document.getElementById('adminUsersList');
+    container.innerHTML = '<p>Loading members...</p>';
+
+    db.collection('users').where('status', '==', 'approved').get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-state">No approved members yet.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const user = doc.data();
+                container.appendChild(createUserCard(doc.id, user));
+            });
+        })
+        .catch(err => {
+            console.error("Error loading users:", err);
+            container.innerHTML = '<p class="error-state">Error loading members.</p>';
+        });
+}
+
+function createUserCard(uid, user) {
+    const div = document.createElement('div');
+    div.className = 'user-card';
+    div.id = `user-${uid}`;
+
+    const isCurrentUserAdmin = adminEmails.includes(user.email?.toLowerCase());
+    const removeBtn = isCurrentUserAdmin ? '' :
+        `<button class="remove-btn" onclick="removeUser('${uid}', '${escapeHtml(user.displayName || user.email)}')">Remove</button>`;
+
+    div.innerHTML = `
+        <div class="user-card-avatar">
+            ${user.photoURL ? `<img src="${user.photoURL}" alt="${user.displayName}">` :
+            `<span class="avatar-initial">${(user.participantName || user.displayName || 'U').charAt(0)}</span>`}
+        </div>
+        <div class="user-card-info">
+            <h4>${user.participantName || user.displayName || 'Unnamed'}</h4>
+            <span class="user-email">${user.email}</span>
+            ${isCurrentUserAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+        </div>
+        <div class="user-card-actions">
+            ${removeBtn}
+        </div>
+    `;
+    return div;
+}
+
+function removeUser(uid, name) {
+    if (!confirm(`Remove ${name} from the group? They will need to be re-approved to access again.`)) return;
+
+    db.collection('users').doc(uid).update({
+        status: 'removed',
+        removedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        removedBy: currentUserObj?.email
+    }).then(() => {
+        showToast(`${name} has been removed`, 'success');
+        // Remove card with animation
+        const card = document.getElementById(`user-${uid}`);
+        if (card) {
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+        }
+    }).catch(err => {
+        showToast('Error removing user', 'error');
+        console.error(err);
+    });
+}
+
+// === Event Approval Functions ===
+function loadPendingEvents() {
+    const container = document.getElementById('adminEventsList');
+    if (!container) return;
+
+    container.innerHTML = '<p>Loading pending events...</p>';
+
+    db.collection('custom_events').where('status', '==', 'pending').get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-state">No pending events.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const event = doc.data();
+                container.appendChild(createEventCard(doc.id, event));
+            });
+        })
+        .catch(err => {
+            console.error("Error loading pending events:", err);
+            container.innerHTML = '<p class="error-state">Error loading events.</p>';
+        });
+}
+
+function createEventCard(eventId, event) {
+    const div = document.createElement('div');
+    div.className = 'event-request-card';
+    div.id = `event-${eventId}`;
+
+    div.innerHTML = `
+        <div class="event-request-info">
+            <h4>${event.title}</h4>
+            <span class="event-meta">${event.date || 'No date'} • ${event.location || 'No location'}</span>
+            <span class="event-submitter">Submitted by: ${event.createdBy || 'Unknown'}</span>
+        </div>
+        <div class="event-request-actions">
+            <button class="approve-btn" onclick="approveEvent('${eventId}', '${escapeHtml(event.title)}')">Approve</button>
+            <button class="reject-btn" onclick="rejectEvent('${eventId}', '${escapeHtml(event.title)}')">Reject</button>
+        </div>
+    `;
+    return div;
+}
+
+function approveEvent(eventId, title) {
+    if (!confirm(`Approve event "${title}"?`)) return;
+
+    db.collection('custom_events').doc(eventId).update({
+        status: 'approved',
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        approvedBy: currentUserObj?.email
+    }).then(() => {
+        showToast(`Event "${title}" approved!`, 'success');
+        const card = document.getElementById(`event-${eventId}`);
+        if (card) {
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+        }
+    }).catch(err => {
+        showToast('Error approving event', 'error');
+        console.error(err);
+    });
+}
+
+function rejectEvent(eventId, title) {
+    if (!confirm(`Reject and delete event "${title}"?`)) return;
+
+    db.collection('custom_events').doc(eventId).delete()
+        .then(() => {
+            showToast(`Event "${title}" rejected`, 'success');
+            const card = document.getElementById(`event-${eventId}`);
+            if (card) {
+                card.style.opacity = '0';
+                setTimeout(() => card.remove(), 300);
+            }
+        }).catch(err => {
+            showToast('Error rejecting event', 'error');
+            console.error(err);
+        });
 }
 
 // === FullCalendar Implementation ===
@@ -1763,6 +1929,11 @@ function saveNewEvent() {
     // Generate unique event ID
     const eventId = 'custom-' + Date.now();
 
+    // Check if user is admin - admins' events are auto-approved
+    const userEmail = currentUserObj ? currentUserObj.email : null;
+    const isUserAdmin = isAdmin(userEmail);
+    const eventStatus = isUserAdmin ? 'approved' : 'pending';
+
     // Create event object
     const newEvent = {
         title: title,
@@ -1771,26 +1942,26 @@ function saveNewEvent() {
         location: location,
         category: category,
         createdBy: currentUser,
-        isCustom: true
+        createdByEmail: userEmail,
+        isCustom: true,
+        status: eventStatus,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     // Save to Firestore
     db.collection('custom_events').doc(eventId).set(newEvent)
         .then(() => {
-            showToast(`Event "${title}" added!`, 'success');
-            // DOM update handled by listener
+            if (isUserAdmin) {
+                showToast(`Event "${title}" added!`, 'success');
+            } else {
+                showToast(`Event "${title}" submitted for approval!`, 'success');
+            }
             closeAddEvent();
         })
         .catch((error) => {
             console.error("Error adding event: ", error);
             showToast("Error adding event", "error");
         });
-
-    // Optimistic update (optional, but let's rely on listener for consistency)
-    // eventsData[eventId] = newEvent;
-    // customEvents[eventId] = newEvent;
-    // addEventCardToDOM(eventId, newEvent);
-    // updateStats();
 }
 
 function addEventCardToDOM(eventId, event) {
@@ -1990,6 +2161,14 @@ window.signOut = signOut;
 window.openAddEvent = openAddEvent;
 window.closeAddEvent = closeAddEvent;
 window.saveNewEvent = saveNewEvent;
+
+// Admin functions
+window.switchAdminTab = switchAdminTab;
+window.loadAllUsers = loadAllUsers;
+window.removeUser = removeUser;
+window.loadPendingEvents = loadPendingEvents;
+window.approveEvent = approveEvent;
+window.rejectEvent = rejectEvent;
 
 // === Edit Event Functions ===
 let isEditMode = false;

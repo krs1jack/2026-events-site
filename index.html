@@ -1316,12 +1316,19 @@
     <div id="adminModal" class="modal">
         <div class="modal-content admin-content">
             <span class="close-modal" onclick="closeAdminModal()">&times;</span>
-            <h2>Admin Dashboard</h2>
-            <p class="modal-details">Manage community access</p>
+            <h2>⚙️ Admin Dashboard</h2>
+            <p class="modal-subtitle">Manage members and events</p>
 
             <div class="admin-tabs">
-                <button class="admin-tab active" onclick="switchAdminTab('pending')">Pending Requests</button>
-                <button class="admin-tab" onclick="switchAdminTab('users')">All Users</button>
+                <button class="admin-tab active" data-tab="pending" onclick="switchAdminTab('pending')">
+                    <span class="tab-icon">👤</span> Pending
+                </button>
+                <button class="admin-tab" data-tab="users" onclick="switchAdminTab('users')">
+                    <span class="tab-icon">👥</span> Members
+                </button>
+                <button class="admin-tab" data-tab="events" onclick="switchAdminTab('events')">
+                    <span class="tab-icon">📅</span> Events
+                </button>
             </div>
 
             <div id="adminPendingList" class="admin-list-container">
@@ -1332,10 +1339,14 @@
             <div id="adminUsersList" class="admin-list-container hidden">
                 <!-- Populated by JS -->
             </div>
+
+            <div id="adminEventsList" class="admin-list-container hidden">
+                <!-- Populated by JS -->
+            </div>
         </div>
     </div>
 
-    <script src="script.js?v=9"></script>
+    <script src="script.js?v=10"></script>
 </body>
 
 </html>
